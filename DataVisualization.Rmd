@@ -1,0 +1,95 @@
+---
+title: "EDA"
+author: "Christina De Cesaris"
+date: "2/24/2021"
+output: html_document
+---
+```{r}
+#test
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+library(gridExtra)
+```
+
+```{r}
+covid <- read.table("Data/statewide_cases.csv", header = TRUE, sep = ",")
+density <- read.table("Data/Average_Household_Size_and_Population_Density_-_County.csv", header = TRUE, sep = ",")
+colnames(density)[6] <- "county"
+merged <- merge(covid,density,by="county")
+
+```
+
+
+
+```{r}
+merged
+```
+
+
+```{r}
+
+#make sure date is of class Date
+covid$date=as.Date(covid$date) 
+
+#we need a specific californoia dataset to calculate seven day running average
+cases_sum=aggregate(covid$newcountconfirmed, by=list(covid$date), sum)
+deaths_sum=aggregate(covid$newcountdeaths, by=list(covid$date), sum)
+#cut date off to avoid NA error
+names(cases_sum)=c('date','total_n_cases')
+names(deaths_sum)=c('date','total_n_deaths')
+#cases_sum=subset(cases_sum, date >= as.Date("2020-03-01") )
+```
+
+```{r}
+cases_sum$avg_new_cases=stats::filter(cases_sum$total_n_cases, filter = rep(1/7, 7), sides = 1)
+
+
+deaths_sum$avg_new_deaths=stats::filter(deaths_sum$total_n_deaths, filter = rep(1/7, 7), sides = 1)
+
+
+```
+
+
+```{r 7-Day Average plot, California Cases}
+
+Cali_Cases <- cases_sum %>%
+  ggplot( aes(x=date, y=total_n_cases)) +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=date, y=avg_new_cases,color='7-Day Running Average')) +
+    labs(x="Date", y="New Cases",title = "Covid Cases in California", color = "Legend") + 
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Cali_Cases <- ggplotly(Cali_Cases)
+
+
+
+Cali_Deaths <- deaths_sum %>%
+  ggplot( aes(x=date, y=total_n_deaths)) +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=date, y=avg_new_deaths,color='7-Day Running Average')) +
+    labs(x="Date", y="New Deaths",title = "Covid Deaths in California", color = "Legend") + 
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Cali_Deaths <- ggplotly(Cali_Deaths)
+
+Cali_Cases
+Cali_Deaths
+```
+
+```{r}
+county_comparision=merged %>%filter(State=="California")%>% group_by(county,B01001_calc_PopDensity) %>% summarize(mean_new=mean(newcountconfirmed))
+
+county_comparision
+```
+
+```{r}
+n_pean=ggplot(county_comparision, aes(factor(county), B01001_calc_PopDensity )) + geom_point(aes(shape = factor(county),color=factor(county_comparision)),size=5 )+labs(x="State", y="Fatality Rate",
+       col="Penalty",shape="Year",title="Fatality Rate and Penality Policy 82,88")+  theme(legend.position='bottom',text = element_text(size=14,face = 'bold'),
+        axis.text.x = element_text(angle=75, hjust=1),axis.ticks.x =element_line(size=0.5))+scale_x_discrete(guide = guide_axis(n.dodge = 1),expand=c(0, 0))+  scale_color_manual(labels = c("No", "Yes"), values = c("red", "green"))+ geom_line()
+n_pean
+```
+
