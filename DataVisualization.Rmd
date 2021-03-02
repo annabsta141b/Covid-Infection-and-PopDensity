@@ -71,15 +71,4 @@ Cali_Cases
 Cali_Deaths
 ```
 
-```{r}
-county_comparision=merged %>%filter(State=="California")%>% group_by(county,B01001_calc_PopDensity) %>% summarize(mean_new=mean(newcountconfirmed))
 
-county_comparision
-```
-
-```{r}
-n_pean=ggplot(county_comparision, aes(factor(county), B01001_calc_PopDensity )) + geom_point(aes(shape = factor(county),color=factor(county_comparision)),size=5 )+labs(x="State", y="Fatality Rate",
-       col="Penalty",shape="Year",title="Fatality Rate and Penality Policy 82,88")+  theme(legend.position='bottom',text = element_text(size=14,face = 'bold'),
-        axis.text.x = element_text(angle=75, hjust=1),axis.ticks.x =element_line(size=0.5))+scale_x_discrete(guide = guide_axis(n.dodge = 1),expand=c(0, 0))+  scale_color_manual(labels = c("No", "Yes"), values = c("red", "green"))+ geom_line()
-n_pean
-```
