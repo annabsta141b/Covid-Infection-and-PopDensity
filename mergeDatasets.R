@@ -49,10 +49,15 @@ merged$Poverty_Estimate=as.numeric(as.character(
 merged$Poverty_Percent=as.numeric(as.character(merged$Poverty_Percent))
 
 merged$Median_Household_Income=as.numeric(as.character(gsub(",","",merged$Median_Household_Income)))
+merged$elder_ratio=merged$Total_age65plus/merged$Pop_Estimate
+merged$new_casesrate=merged$newcountconfirmed/merged$Pop_Estimate*10000 #per10k
+
+#code in our popdensity above or below median, below or equal  med = 0
+med=median(final$PopDensity_per_square_mile_of_land_area)
+final$PopCode <- factor(ifelse(final$PopDensity_per_square_mile_of_land_area <= med, "0", "1"))
 
 
 #export working dataset
 final=merged
 write.csv(final,'Data/final.csv')
-View(final)
 
