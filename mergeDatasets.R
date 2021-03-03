@@ -5,11 +5,10 @@ demographics <-read.csv("Data/demographic information.csv",header = T)
 ages <- read.csv("Data/age_urban_counties.csv")
 
 
-
 #select relevant cols in ages
-ages=ages[ages$State=="CA",c("State","Area_Name","Rural.urban_Continuum.Code_2013","Urban_Influence_Code_2013","Total_age65plus","Density.per.square.mile.of.land.area...Population","Density.per.square.mile.of.land.area...Housing.units","ICU.Beds")]
+ages=ages[ages$State=="CA",c("State","Area_Name","POP_ESTIMATE_2018","Rural.urban_Continuum.Code_2013","Urban_Influence_Code_2013","Total_age65plus","Density.per.square.mile.of.land.area...Population","Density.per.square.mile.of.land.area...Housing.units","ICU.Beds")]
 
-colnames(ages)=c("State","county","Rural_urban_Continuum_Code_2013","Urban_Influence_Code_2013","Total_age65plus","PopDensity_per_square_mile_of_land_area","HouseDensity.per.square.mile.of.land.area","ICU_Beds")
+colnames(ages)=c("State","county","Pop_Estimate","Rural_urban_Continuum_Code_2013","Urban_Influence_Code_2013","Total_age65plus","PopDensity_per_square_mile_of_land_area","HouseDensity.per.square.mile.of.land.area","ICU_Beds")
 
 
 
@@ -55,5 +54,5 @@ merged$Median_Household_Income=as.numeric(as.character(gsub(",","",merged$Median
 #export working dataset
 final=merged
 write.csv(final,'Data/final.csv')
-
+View(final)
 
