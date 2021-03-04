@@ -53,11 +53,13 @@ merged$elder_ratio=merged$Total_age65plus/merged$Pop_Estimate
 merged$new_casesrate=merged$newcountconfirmed/merged$Pop_Estimate*10000 #per10k
 
 #code in our popdensity above or below median, below or equal  med = 0
-med=median(final$PopDensity_per_square_mile_of_land_area)
-final$PopCode <- factor(ifelse(final$PopDensity_per_square_mile_of_land_area <= med, "0", "1"))
+medp=median(merged$PopDensity_per_square_mile_of_land_area)
+merged$PopCode <- factor(ifelse(merged$PopDensity_per_square_mile_of_land_area <= medp, "0", "1"))
+
 
 
 #export working dataset
 final=merged
 write.csv(final,'Data/final.csv')
+
 

@@ -1,0 +1,45 @@
+---
+title: "LMM"
+author: "Christina De Cesaris"
+date: "3/3/2021"
+output: html_document
+---
+
+
+
+```{r}
+library(lmerTest)
+library(tidyverse)
+attach(final)
+
+which(is.na(final))
+final=drop_na(final)
+which(is.na(final)) #good
+names(final)
+
+```
+         
+```{r}
+
+dat = final[,c("county"  ,'new_casesrate','elder_ratio','PopCode','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Median_Household_Income","Pop_Estimate","ICU_Beds"),]
+
+model1 = lmer(new_casesrate~elder_ratio+factor(PopCode)+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate)+(1|county)+(1|date),data = dat)
+summary(model1)
+
+```
+
+```{r}
+## Balance analysis
+model2 = lm(elder_ratio~PopCode,data = dat)
+summary(model2)#clearly there is bias between 
+
+dat$PopCode = relevel(dat$PopCode,ref='0')
+models = glm(PopCode~elder_ratio+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate),family = binomial,data = dat)
+prob = models$fitted.values
+pscore = ifelse(dat$new_casesrate=='1',prob,(1-prob))
+
+weight = 1/pscore
+
+model_new = lmer(new_casesrate~elder_ratio+factor(PopCode)+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate)+(1|county)+(1|date),data = dat,weights = weight)
+summary(model_new) #interesting
+```
