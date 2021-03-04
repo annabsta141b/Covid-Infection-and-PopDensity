@@ -71,3 +71,9 @@ Cali_Cases
 Cali_Deaths
 ```
 
+```{r Similar Country Size and Density Cases}
+who_covid <- read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
+
+iraq_area <- who_covid[who_covid$Country == "Iraq",]  # Iraq has ver close area with CA
+spain_density <- who_covid[who_covid$Country == "Spain",]  # Spain has very close population density with CA
+```
