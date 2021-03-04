@@ -6,11 +6,9 @@ ages <- read.csv("Data/age_urban_counties.csv")
 
 
 #select relevant cols in ages
-ages=ages[ages$State=="CA",c("State","Area_Name","POP_ESTIMATE_2018","Rural.urban_Continuum.Code_2013","Urban_Influence_Code_2013","Total_age65plus","Density.per.square.mile.of.land.area...Population","Density.per.square.mile.of.land.area...Housing.units","ICU.Beds")]
+ages=ages[ages$State=="CA",c("State","Area_Name","POP_ESTIMATE_2018","Urban_Influence_Code_2013","Total_age65plus","Density.per.square.mile.of.land.area...Population","Density.per.square.mile.of.land.area...Housing.units","ICU.Beds")]
 
-colnames(ages)=c("State","county","Pop_Estimate","Rural_urban_Continuum_Code_2013","Urban_Influence_Code_2013","Total_age65plus","PopDensity_per_square_mile_of_land_area","HouseDensity.per.square.mile.of.land.area","ICU_Beds")
-
-
+colnames(ages)=c("State","county","Pop_Estimate","Urban_Influence_Code_2013","Total_age65plus","PopDensity_per_square_mile_of_land_area","HouseDensity.per.square.mile.of.land.area","ICU_Beds")
 
 
 #select relevant cols in demographics
@@ -36,7 +34,7 @@ merged <- merge(merged, ages,by='county')
 #sapply(merged, class)
 
 #numeric -> factor
-merged$Rural_urban_Continuum_Code_2013=as.factor(merged$Rural_urban_Continuum_Code_2013)
+#merged$Rural_urban_Continuum_Code_2013=as.factor(merged$Rural_urban_Continuum_Code_2013)
 
 merged$Urban_Influence_Code_2013=as.factor(merged$Urban_Influence_Code_2013)
 
@@ -52,10 +50,10 @@ merged$Median_Household_Income=as.numeric(as.character(gsub(",","",merged$Median
 merged$elder_ratio=merged$Total_age65plus/merged$Pop_Estimate
 merged$new_casesrate=merged$newcountconfirmed/merged$Pop_Estimate*10000 #per10k
 
-#code in our popdensity above or below median, below or equal  med = 0
-medp=median(merged$PopDensity_per_square_mile_of_land_area)
-merged$PopCode <- factor(ifelse(merged$PopDensity_per_square_mile_of_land_area <= medp, "0", "1"))
+View(final)
 
+#MetCode: 1-> metropoliton, 0-> nonmetropolitan
+merged$MetCode <- factor(ifelse(as.numeric(merged$Urban_Influence_Code_2013) < 3, "1", "0"))
 
 
 #export working dataset
