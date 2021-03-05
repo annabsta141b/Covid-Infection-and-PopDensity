@@ -11,6 +11,7 @@ library(dplyr)
 library(plotly)
 library(hrbrthemes)
 library(gridExtra)
+library(tidyverse)
 source(file="mergeDatasets.R")
 ```
 
@@ -74,6 +75,63 @@ Cali_Deaths
 ```{r Similar Country Size and Density Cases}
 who_covid <- read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
 
-iraq_area <- who_covid[who_covid$Country == "Iraq",]  # Iraq has ver close area with CA
+iraq_area <- who_covid[who_covid$Country == "Iraq",]  # Iraq has very close area with CA
 spain_density <- who_covid[who_covid$Country == "Spain",]  # Spain has very close population density with CA
+
+iraq_area$Date_reported=as.Date(iraq_area$Date_reported)
+spain_density$Date_reported=as.Date(spain_density$Date_reported)
+
+iraq_area$avg_new_cases=stats::filter(iraq_area$New_cases, filter = rep(1/7, 7), sides = 1)
+iraq_area$avg_new_deaths=stats::filter(iraq_area$New_deaths, filter = rep(1/7, 7), sides = 1)
+
+spain_density$avg_new_cases=stats::filter(spain_density$New_cases, filter = rep(1/7, 7), sides = 1)
+spain_density$avg_new_deaths=stats::filter(spain_density$New_deaths, filter = rep(1/7, 7), sides = 1)
+
+Iraq_Cases <- iraq_area %>%
+  ggplot( aes(x=Date_reported, y=New_cases)) +
+    geom_area(fill="lightgreen", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average'), color='Green') +
+    labs(x="Date", y="New Cases",title = "Covid Cases in Iraq", color = "Legend") +
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Iraq_Cases <- ggplotly(Iraq_Cases)
+
+
+Iraq_Deaths <- iraq_area %>%
+  ggplot( aes(x=Date_reported, y=New_deaths)) +
+    geom_area(fill="lightgreen", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average'), color='Green') +
+    labs(x="Date", y="New Deaths",title = "Covid Deaths in Iraq", color = "Legend") +
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Iraq_Deaths <- ggplotly(Iraq_Deaths)
+
+Iraq_Cases
+Iraq_Deaths
+
+Spain_Cases <- spain_density %>%
+  ggplot( aes(x=Date_reported, y=New_cases)) +
+    geom_area(fill="blue", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average'), color='blue') +
+    labs(x="Date", y="New Cases",title = "Covid Cases in Spain", color = "Legend") +
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Spain_Cases <- ggplotly(Spain_Cases)
+
+
+Spain_Deaths <- spain_density %>%
+  ggplot( aes(x=Date_reported, y=New_deaths)) +
+    geom_area(fill="blue", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average'), color='blue') +
+    labs(x="Date", y="New Deaths",title = "Covid Deaths in Spain", color = "Legend") +
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+Spain_Deaths <- ggplotly(Spain_Deaths)
+
+Spain_Cases
+Spain_Deaths
 ```
