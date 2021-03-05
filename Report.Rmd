@@ -417,6 +417,7 @@ The final mixed effects model with propensity score weights is not significantly
 
 
 # Sensitivity Analysis
+
 ```{r}
 
 plot(model_new7,type=c('p','smooth'))
