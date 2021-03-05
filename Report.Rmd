@@ -9,6 +9,16 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+library(gridExtra)
+library(tidyverse)
+source(file="mergeDatasets.R")
+```
+
 # Abstract
 
 The COVID-19 pandemic, while ubiquitous worldwide, has differentially affected different segments of the population. Regional demographic factors, such as population density, could have an impact on this respiratory, community transmitted disease. This study addresses the association and impact of demographic factors on COVID-19 rates, particularly in California Counties. California’s counties were selected due to their large range in population densities (1.6 to 17,179.2 people per square mile) and diversity across the rural-urban continuum. State model type. In particular, this study calculates a propensity score to explore if there is a causal relationship between the population density and COVID-19 case rates. **State finding 1. State finding 2.** These findings indicate which areas are at higher risk during pandemic outbreaks and could critically help policymakers allocate funding and healthcare to these regions.
