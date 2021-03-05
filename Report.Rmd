@@ -2,6 +2,8 @@
 title: "The Effect of Population Density on COVID-19 Case Rates"
 output:
   html_document:
+    df_print: paged
+    graphics: yes
     number_sections: true
 ---
 Names: Ana, Mary, Cameron, Chritina
