@@ -26,7 +26,7 @@ This study looks to answer one main research question:
 
 Our main hypothesis for this research question is that population density will have a positive relationship with COVID-19 case rates. Additionally, we hypothesize that a higher population density causes increased COVID-19 case rates. Since COVID-19 is a respiratory illness that spreads readily through the community via the air (Peters, 2020). The primary reasoning behind our hypotheses is that higher densities of people breathing in proximity would theoretically make it easier to transmit the virus. Thus, areas with more people per square mile will have a proportionally higher rate of transmission.
 
-## Data
+## Data Summary
 
 To isolate the problem, we will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that the results we see are the effect of population density. This study focuses on California, and the key regions of Spain and Iraq due to their similarity to California (more information pertaining to this decision will be communicated in the remainder of the report).
 
@@ -34,6 +34,8 @@ Our analysis will use the state of California as a proxy for other countries and
 
 
 # Background
+
+## Data Specifics
 
 This project utilizes a few different data sources because they each shed a different light on the socio-demographic realities of COVID-19. The different data sources are summarized in Table 1. 
 
