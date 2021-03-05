@@ -1,0 +1,79 @@
+---
+title: "covid_maps"
+author: "Group3"
+date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Maps
+
+
+```{r}
+#devtools::install_github('UrbanInstitute/urbnmapr')
+
+library(tidyverse)
+library(urbnmapr)
+
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+
+county_data <- read.csv("/Users/maryfrancis/Documents/GitHub/Project-3/Data/final_mapping.csv")
+#a version just with pop density and region name:
+county_data_formatted <- read.csv("/Users/maryfrancis/Documents/GitHub/Project-3/Data/final_mapping_format.csv")
+county_data_formatted <- county_data_formatted[,1:3]
+pop_dense <- cbind(unique(county_data_formatted$subregion), unique(county_data_formatted$PopDensity))
+colnames(pop_dense) <- c("subregion" , "popdense")
+
+#states <- map_data("state")
+ca_df <- subset(states, region == "california")
+counties <- map_data("county")
+county_lines <- subset(counties, region == "california")
+#write.csv(county_lines,'/Users/maryfrancis/Documents/GitHub/Project-3/Data/county_lines.csv')
+
+
+
+# NAME <- unique(county_data$NAME)
+# group <- unique(county_lines$group)
+# c_num <- cbind(NAME, group)
+# 
+# county_data <- merge(county_data, c_num, by = "NAME")
+
+county_pop <- merge(county_lines, pop_dense, by = "subregion")
+
+ca_base <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(color = "black", fill = "gray")
+#ca_base + theme_nothing()
+
+ca_base + theme_nothing() + 
+  geom_polygon(data = county_lines, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back on top
+
+# prepare to drop the axes and ticks but leave the guides and legends
+# We can't just throw down a theme_nothing()!
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+elbow_room1 <- ca_base + 
+      geom_polygon(data = county_data, aes(fill = PopDensity), color = "white") +
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+
+elbow_room1 
+
+
+```
+
+

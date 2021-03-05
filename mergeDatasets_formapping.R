@@ -8,7 +8,7 @@ data(fips_codes)
 #gives us the lat and long
 counties <- read.table('/Users/maryfrancis/Downloads/2020_Gaz_counties_national.txt', sep = "\t", header = TRUE)
 counties_ca <- counties[which(counties$USPS == "CA"),]
-write.csv(counties_ca, '/Users/maryfrancis/Documents/GitHub/Project-3/Data/counties_ca.csv')
+#write.csv(counties_ca, '/Users/maryfrancis/Documents/GitHub/Project-3/Data/counties_ca.csv')
 #data cleaning manual (add spaces in county names)
 counties_ca <- read.csv('/Users/maryfrancis/Documents/GitHub/Project-3/Data/counties_ca.csv', header = TRUE)
 
