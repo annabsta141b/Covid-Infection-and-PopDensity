@@ -15,6 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 #devtools::install_github('UrbanInstitute/urbnmapr')
 
+setwd('/Users/maryfrancis/Documents/GitHub/Project-3/Data/')
+#install.packages("viridis")
+library(viridis)
+
 library(tidyverse)
 library(urbnmapr)
 
@@ -37,7 +41,6 @@ county_lines <- subset(counties, region == "california")
 #write.csv(county_lines,'/Users/maryfrancis/Documents/GitHub/Project-3/Data/county_lines.csv')
 
 
-
 # NAME <- unique(county_data$NAME)
 # group <- unique(county_lines$group)
 # c_num <- cbind(NAME, group)
@@ -45,15 +48,109 @@ county_lines <- subset(counties, region == "california")
 # county_data <- merge(county_data, c_num, by = "NAME")
 
 county_pop <- merge(county_lines, pop_dense, by = "subregion")
+county_pop$popdense <- as.numeric(county_pop$popdense)
+```
 
-ca_base <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
+```{r}
+### Make a map of pop density
+ca_base <- ggplot(data = county_pop, mapping = aes(x = long, y = lat, group = group)) + 
   coord_fixed(1.3) + 
+  geom_polygon(data = county_pop, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back o
   geom_polygon(color = "black", fill = "gray")
-#ca_base + theme_nothing()
+#ca_base + theme_nothing() 
 
-ca_base + theme_nothing() + 
-  geom_polygon(data = county_lines, fill = NA, color = "white") +
-  geom_polygon(color = "black", fill = NA)  # get the state border back on top
+#
+# prepare to drop the axes and ticks but leave the guides and legends
+# We can't just throw down a theme_nothing()!
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+elbow_room1 <- ca_base + 
+      geom_polygon(data = county_pop, aes(fill = popdense), color = "white") +
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+
+
+eb2 <- elbow_room1 + 
+    #scale_fill_gradientn(colours = rev(rainbow(7)),
+                         #breaks = c(2, 4, 10, 100, 1000, 10000),
+                         #trans = "log10")
+    scale_fill_viridis(option="cividis", trans = "log10")
+eb2
+
+```
+
+
+```{r}
+library(ggthemes)
+
+county_data_timeseries <- read.csv("/Users/maryfrancis/Documents/GitHub/Project-3/Data/final_mapping_timeseries.csv")
+
+county_time <- merge(county_lines, county_data_timeseries, by = "subregion")
+county_time$totalcountconfirmed <- as.numeric(county_time$totalcountconfirmed)
+
+#choose three dates for 3 maps 
+
+county_time_July20 <- county_time[which(county_time$date == "7/20/20"),]
+county_time_Jan1 <- county_time[which(county_time$date == "1/1/21"),]
+county_time_Feb22 <- county_time[which(county_time$date == "2/5/21"),]
+
+
+```
+
+```{r}
+#July base
+
+ca_base_jul <- ggplot(data = county_time_July20, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(data = county_time_July20, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back o
+  geom_polygon(color = "black", fill = "gray")
+#ca_base + theme_nothing() 
+
+
+
+# prepare to drop the axes and ticks but leave the guides and legends
+# We can't just throw down a theme_nothing()!
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+elbow_room_jul <- ca_base_jul + 
+      geom_polygon(data = county_time_July20, aes(fill = totalcountconfirmed), color = "white") +
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+
+
+eb_jul <- elbow_room_jul + 
+    scale_fill_viridis(option="cividis", trans = "log10")
+eb_jul
+
+```
+
+```{r}
+###For January
+
+ca_base <- ggplot(data = county_time_Jan1, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(data = county_time_Jan1, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back o
+  geom_polygon(color = "black", fill = "gray")
+#ca_base + theme_nothing() 
+
+
 
 # prepare to drop the axes and ticks but leave the guides and legends
 # We can't just throw down a theme_nothing()!
@@ -66,14 +163,48 @@ ditch_the_axes <- theme(
   axis.title = element_blank()
   )
 elbow_room1 <- ca_base + 
-      geom_polygon(data = county_data, aes(fill = PopDensity), color = "white") +
+      geom_polygon(data = county_time_Jan1, aes(fill = totalcountconfirmed), color = "white") +
       geom_polygon(color = "black", fill = NA) +
       theme_bw() +
       ditch_the_axes
 
-elbow_room1 
-
-
+ 
+eb2 <- elbow_room1 + 
+    scale_fill_viridis(option="cividis", trans = "log10")
+eb2
 ```
 
+```{r}
+png('January_covid_nums.png')
+###For Feb
 
+ca_base <- ggplot(data = county_time_Feb22, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(data = county_time_Feb22, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA)  # get the state border back o
+  geom_polygon(color = "black", fill = "gray")
+#ca_base + theme_nothing() 
+
+
+# prepare to drop the axes and ticks but leave the guides and legends
+# We can't just throw down a theme_nothing()!
+ditch_the_axes <- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )
+elbow_room1 <- ca_base + 
+      geom_polygon(data = county_time_Feb22, aes(fill = totalcountconfirmed), color = "white") +
+      geom_polygon(color = "black", fill = NA) +
+      theme_bw() +
+      ditch_the_axes
+
+ 
+eb2 <- elbow_room1 + 
+    scale_fill_viridis(option="cividis", trans = "log10")
+eb2
+
+```
