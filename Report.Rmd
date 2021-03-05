@@ -187,13 +187,21 @@ Our analysis will use the state of California as a proxy for other countries and
 
 This project utilizes a few different data sources because they each shed a different light on the socio-demographic realities of COVID-19. The different data sources are summarized in Table 1. 
 
+### WHO COVID-19 Dataset
+
 The first data source, the WHO COVID-19 global dataset, was compiled by The World Health Organization to complete their global mission of freely communicating global health data. The target population for this dataset was the entire world population, reported by country of residence. The sampling mechanism was through the reporting of sovereign nations. This sampling mechanism may have had differences between countries as some have more stringent reporting requirements than others. The variables utilized from this dataset were the number of new cases and deaths at a country level. We used this dataset to enhance the analysis at a global level, incorporating nations with similar population densities to California.
 
+### New York Times Dataset
+
 The second dataset is from the New York Times. This data contains county level information about the number of confirmed COVID-19 cases (both new and total). The data is compiled for the New York Times by journalists across the nation who combine info from public health press conferences and meetings. The target population is the entire United States, and the sampling mechanism is, theoretically, every case reported at a state or county level. If a state or a county refused or neglected to communicate that information publicly, the data would not be represented in this database. The variables we used from this dataset were the total number of COVID-19 cases. This dataset was critical to the county-level component of the study, which chose to isolate the effects of population density in subregions which are more evenly urban or rural than the state as a whole.
+
+### US Census Dataset
 
 The third data source is the US census. This Organization is a part of the US government who counts the entire nation every decade. As a census, by definition the target population is every resident of the United States, and their sampling mechanism is to speak to every household in the entire country and count all residents. The main variable that we used from this dataset is the population density per county. This is calculated as the population per square mile. We used this dataset as it could give us the best idea of the true population density. 
 
 **The fourth and fifth dataset come from ____ ; target population, sampling mechanism; explain variables;** We used this data to
+
+## Other work
 
 Similar studies have looked at the effects of population density on the COVID-19 pandemic (Peters, 2020; Wong, 2020; Almagro, 2020). Previous studies have shown that it is an important factor in community-spread diseases (Tarwater 2001). This report adds to the existing literature as it adds the analysis of causality in the discussion.
 
