@@ -1,6 +1,8 @@
 ---
 title: "The Effect of Population Density on COVID-19 Case Rates"
-output: html_document
+output:
+  html_document:
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -9,22 +11,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Abstract
 
-The COVID-19 pandemic, while ubiquitous worldwide, has differentially affected different segments of the population. Regional demographic factors, such as population density, could have an impact on this respiratory, community transmitted disease. This study addresses the association and impact of demographic factors on COVID-19 rates, particularly in California Counties. California’s counties were selected due to their large range in population densities (1.6 - 17,179.2 people per square mile) and diversity across the rural-urban continuum. State model type. In particular, this study calculates a propensity score to explore if there is a causal relationship between the population density and COVID-19 case rates.  State finding 1. State finding 2. These findings indicate which areas are at higher risk during pandemic outbreaks and could critically help policymakers allocate funding and healthcare to these regions.
+The COVID-19 pandemic, while ubiquitous worldwide, has differentially affected different segments of the population. Regional demographic factors, such as population density, could have an impact on this respiratory, community transmitted disease. This study addresses the association and impact of demographic factors on COVID-19 rates, particularly in California Counties. California’s counties were selected due to their large range in population densities (1.6 to 17,179.2 people per square mile) and diversity across the rural-urban continuum. State model type. In particular, this study calculates a propensity score to explore if there is a causal relationship between the population density and COVID-19 case rates. **State finding 1. State finding 2.** These findings indicate which areas are at higher risk during pandemic outbreaks and could critically help policymakers allocate funding and healthcare to these regions.
 
 
 # Introduction
 
-The ongoing COVID-19 pandemic has impacted lives worldwide, but residents of different regions have been differentially impacted. Since COVID-19 regulations have often been handled at the national or state level, the impact of subregional influences on case counts needs to be addressed to allocate aid where it is needed most. Additional aid to vulnerable subregions could hinder the progress of the virus as it spreads throughout an entire country and keep more of the overall population healthy. One particular factor we are interested in is the population distribution over a country, and how differing population densities between  subregions plays a role in transmission rates of the disease.
+The ongoing COVID-19 pandemic has impacted lives worldwide, but residents of different regions have been differentially impacted. Since COVID-19 regulations have often been handled at the national or state level, the impact of subregional influences on case counts needs to be addressed to allocate aid where it is needed most. Additional aid to vulnerable subregions could hinder the progress of the virus as it spreads throughout an entire country and keep more of the overall population healthy. One particular factor we are interested in is the population distribution over a country, and how differing population densities between subregions plays a role in transmission rates of the disease.
 
-With that in mind, this study looks to answer one main research question:
+## Main Question
+
+This study looks to answer one main research question:
 
 **What is the relationship between population distribution and COVID-19 case rates within a country, and is it a causal relationship?**
 
 Our main hypothesis for this research question is that population density will have a positive relationship with COVID-19 case rates. Additionally, we hypothesize that a higher population density causes increased COVID-19 case rates. Since COVID-19 is a respiratory illness that spreads readily through the community via the air (Peters, 2020). The primary reasoning behind our hypotheses is that higher densities of people breathing in proximity would theoretically make it easier to transmit the virus. Thus, areas with more people per square mile will have a proportionally higher rate of transmission.
 
+## Data
+
 To fully address this problem, our model will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that population density is the item being studied. This study focuses on California, and the key regions of Spain and Iraq due to their similarity to California (more information pertaining to this decision will be communicated in the remainder of the report). 
 
-Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset , which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
+Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset, which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
 
 
 # Background
