@@ -7,11 +7,17 @@ output: html_document
 
 
 
-```{r}
+```{r include=FALSE}
 library(lmerTest)
 library(tidyverse)
 require(survival)
 library(nnet)
+library(MatchIt)
+library(kableExtra)
+library(lubridate)
+library(lmerTest)
+library(scales)
+
 
 final=read.csv("Data/final.csv")
 
@@ -19,119 +25,124 @@ which(is.na(final))
 final=drop_na(final)
 which(is.na(final)) #good
 
+#sapply(final,class)
+final$MetCode=as.factor(final$MetCode)
+final$county=as.factor(final$county)
+final$date=as.factor(final$date)
+
+
 
 ```
          
-```{r}
+```{r include=FALSE}
 #grab our potential predictors and response, MetCode is our treatment group
-dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Median_Household_Income","Pop_Estimate","MetCode","totalcountconfirmed","PopDensity_per_square_mile_of_land_area"),]
+dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Pop_Estimate","MetCode","totalcountconfirmed"),]
 #look for any particular parterns. The clearist is household income and povery rates--unsurpisingly
 #pairs(Filter(is.numeric, dat))
 
-
+dat
 
 ```
 
 
 ```{r}
-sapply(final,class)
-dat$county=
+par(mfrow=c(1,2))
 #Transformation
 #check the distribution of our response and predictors
 hist(final$new_casesrate,col = rainbow(5)) #this is very right skewed
 #normalize
-hist(log(final$new_casesrate),col = rainbow(5)) #lots better
+#hist(log(final$new_casesrate),col = rainbow(5)) #lots better
 #adjust for the 0 value rates
 hist(log(final$new_casesrate+1),col = rainbow(5)) 
 
 dat=dat[-c(which(final$new_casesrate<0)),]
-dat
+
 log_dat=log((Filter(is.numeric,dat))+1)
 
 transformed= cbind(log_dat, Filter(is.factor,dat))
-
+#transformed
+transformed=(drop_na(transformed))
 ```
 
 ```{r}
 #fit unweighted 'naked' model
-model1 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+Poverty_Percent+(1|county)+(1|date),data = transformed)
+model1 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed)
 summary(model1)
 
 ```
 
 ```{r}
+
+transformed$MetCode=as.numeric(as.character(transformed$MetCode))
+
 ## Balance analysis
-model2 = glm(MetCode~elder_ratio+Poverty_Percent,data = transformed)
+model2 = lm(elder_ratio~MetCode,data = transformed)
 summary(model2)#clearly there is bias between 
 
 
 
 
+## Balance analysis
+model3 = lm((Poverty_Percent/100)~MetCode,data = transformed)
+summary(model3)#clearly there is bias between 
 
+```
+
+
+
+```{r}
 
 boxplot(transformed$new_casesrate~transformed$MetCode,main='Comparision of Averages Between Groups',
 xlab='MetroCode',ylab='Infection Rate',col=rainbow(5))
+```
 
+```{r}
 #transformed$MetCode = #relevel(transformed$MetCode,ref='0')
-models = glm(MetCode~.,family=binomial, data = transformed)
-prob = models$fitted.values
-pscore = ifelse(dat$new_casesrate=='1',prob,(1-prob))
-1-pscore
-#pscore
-hist(pscore)
-weight = 1/pscore
-hist(weight)
-model_new7 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Poverty_Percent+(1|date)+(1|county),data = transformed,weights = weight)
-summary(model_new7) #1|pred -> pred becomes random effect here
 
-plot(model_new7)
-qqnorm(resid(model_new7))
+
+transformed$MetCode = relevel(dat$MetCode,ref="0")
+models = glm(MetCode~(elder_ratio)+I(Poverty_Percent/100),family=binomial(logit), data = transformed)
+prob = models$fitted.values
+pscore = ifelse(transformed$MetCode=="1",prob,(1-prob))
+transformed$pscore=pscore
+quantile(pscore)
+
+#pscore
+weight = 1/pscore
+summary(models)$coef %>% kable() %>% kable_styling()
+
+col.alpha<-function(color, alpha){
+  code=col2rgb(color)/256
+  rgb(code[1],code[2],code[3],alpha)
+}
+#better  hist
+hist(unique(transformed$pscore[transformed$MetCode==1]), breaks=25, col=col.alpha("red",.6), freq=F, ylim=c(0,5), xlab="Propensity Score", ylab="", main="Propensity Score Distribution")
+hist(unique(transformed$pscore[transformed$MetCode==0]), breaks=25, col=col.alpha("lightblue",.6), freq=F, ylim=c(0,5), xlab="Propensity Score", ylab="", main="",add=T)
+legend(.4, 5, legend=c("Metro", "NonMetro"),
+       col=c("red", "blue"),fill = c("red", "lightblue") )
+
+#likely won't be much change, the confunding effects are too large
+```
+
+```{r}
+
+model_new7 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed,weights = weight)
+summary(model_new7) #1|pred -> predbecomes random effect here
+
+
+plot(model_new7,type=c('p','smooth'))
+
+
+
+qqnorm(unique(resid(model_new7)))
 qqline(resid(model_new7))
 
-shapiro.test(resid(model_new7))
-ranova(model_new7)
+anova(model_new7)
 ```
 
 
 
-```{r}
-#using mathcit
 
-library(MatchIt)
-m.out0 <- matchit(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area,       method = NULL, distance = "glm", data=transformed)
-
-
-summary(m.out0)
-#balance: Std. N Diff ~~0, Var. rat ~~1
-#we can see Median_Household_Income is wayy off balance
-```
-```{r}
-# 1:1 NN PS matching w/o replacement
-m.out1 <- matchit(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area,
-                 method = "nearest", distance = "glm", data = dat)
-
-summary(m.out1, un = FALSE)
-m.out1$nn
-```
-
-```{r}
-plot(m.out1, type = "jitter", interactive = F)
-plot(m.out1, type = "qq", interactive = F)
-```
-
-```{r}
-df.match <- match.data(m.out1)[1:ncol(transformed)]
-df.match
-??CreateTableOne
-install.packages('pacman')
-pacman::p_load(tableone)
-table4 <- CreateTableOne(vars = c('elder_ratio', 'MetCode', 'Poverty_Percent','HouseDensity.per.square.mile.of.land.area'), 
-                         data = df.match, 
-                        
-                         strata = 'MetCode')
-
-table4
-```
 
 
 

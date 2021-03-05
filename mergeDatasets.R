@@ -53,9 +53,12 @@ merged$new_casesrate=(merged$newcountconfirmed/merged$Pop_Estimate)*10000 #per10
 
 
 #MetCode: 1-> metropoliton, 0-> nonmetropolitan
-merged$MetCode <- factor(ifelse(as.numeric(merged$Urban_Influence_Code_2013) < 3, "1", "0"))
+merged$MetCode <- as.factor(ifelse(as.numeric(merged$Urban_Influence_Code_2013) < 3, "1", "0"))
 
-#date to first date
+#make factorials factorial
+merged$county=as.factor(merged$county)
+merged$date=as.factor(merged$date)
+
 
 #export working dataset
 final=merged

@@ -35,6 +35,7 @@ plot_new_case_pr_day = function(place_abbr){
 plot_new_case("AL")
 
 ########################################################
+library(gridExtra)
 monthly_new_cases = function(place_abbr){
   
   data_for_country = subset(covid, Country_code == place_abbr)
@@ -44,11 +45,11 @@ monthly_new_cases = function(place_abbr){
   data_for_country$yr <- strftime(data_for_country$Date_reported, "%Y")
   
   #aggregate by month
-  newd = aggregate(New_cases~mo +yr, data = data_for_country, sum)
-  newd$date = as.yearmon(paste(newd$yr, newd$mo), "%Y %m")
-  newd$date = as.Date(newd$date)
+  new.case = aggregate(New_cases~mo +yr, data = data_for_country, sum)
+  new.case$date = as.yearmon(paste(new.case$yr, new.case$mo), "%Y %m")
+  new.case$date = as.Date(new.case$date)
   
-  ggplot(newd)+
+ ggplot(new.case)+
     geom_bar(aes(x=date, y = New_cases), stat = "identity")+xlab("Date") +
     ylab("Number of New Cases")+ggtitle(paste0("Monthly Number of New Cases for ", data_for_country$Country))+
     theme(plot.title = element_text(hjust = 0.5))+theme_bw()+
@@ -60,14 +61,105 @@ monthly_new_cases = function(place_abbr){
 monthly_new_cases("IQ")
 monthly_new_cases("ES")
 
+
+monthly_num_dead = function(place_abbr){
+  
+  data_for_country = subset(covid, Country_code == place_abbr)
+
+  #split into month and year
+  data_for_country$mo <- strftime(data_for_country$Date_reported, "%m")
+  data_for_country$yr <- strftime(data_for_country$Date_reported, "%Y")
+
+  #aggregate by month
+  newd.dead = aggregate(New_deaths~mo +yr, data = data_for_country, sum)
+  newd.dead$date = as.yearmon(paste(newd.dead$yr, newd.dead$mo), "%Y %m")
+  newd.dead$date = as.Date(newd.dead$date)
+  
+  ggplot(newd.dead)+
+    geom_bar(aes(x=date, y = New_deaths), stat = "identity")+xlab("Date") +
+    ylab("Mortalities")+ggtitle(paste0("Monthly Mortalities for ", data_for_country$Country))+
+    theme(plot.title = element_text(hjust = 0.5))+theme_bw()+
+    scale_x_date(date_labels = "%y %b",date_breaks = "1 month")+
+    #scale_x_date(date_labels="%b %y",date_breaks  ="1 month")
+    theme(axis.text.x = element_text(angle = 90))
+}
+
+monthly_num_dead("IQ")
+monthly_num_dead("ES")
+#####################################################
+
+cases_mortality_plot = function(place_abbr){
+  
+  data_for_country = subset(covid, Country_code == place_abbr)
+  
+  #split into month and year
+  data_for_country$mo <- strftime(data_for_country$Date_reported, "%m")
+  data_for_country$yr <- strftime(data_for_country$Date_reported, "%Y")
+  
+  #aggregate by month
+  new.case = aggregate(New_cases~mo +yr, data = data_for_country, sum)
+  new.case$date = as.yearmon(paste(new.case$yr, new.case$mo), "%Y %m")
+  new.case$date = as.Date(new.case$date)
+  
+  g1 = ggplot(new.case)+
+    geom_bar(aes(x=date, y = New_cases), stat = "identity")+xlab("Date") +
+    ylab("Number of New Cases")+ggtitle(paste0("Monthly Number of New Cases for ", data_for_country$Country))+
+    theme(plot.title = element_text(hjust = 0.5))+theme_bw()+
+    scale_x_date(date_labels = "%y %b",date_breaks = "1 month")+
+    #scale_x_date(date_labels="%b %y",date_breaks  ="1 month")
+    theme(axis.text.x = element_text(angle = 90))
+  
+  #aggregate by month
+  newd.dead = aggregate(New_deaths~mo +yr, data = data_for_country, sum)
+  newd.dead$date = as.yearmon(paste(newd.dead$yr, newd.dead$mo), "%Y %m")
+  newd.dead$date = as.Date(newd.dead$date)
+  
+  g2 = ggplot(newd.dead)+
+    geom_bar(aes(x=date, y = New_deaths), stat = "identity")+xlab("Date") +
+    ylab("Mortalities")+ggtitle(paste0("Monthly Mortalities for ", data_for_country$Country))+
+    theme(plot.title = element_text(hjust = 0.5))+theme_bw()+
+    scale_x_date(date_labels = "%y %b",date_breaks = "1 month")+
+    #scale_x_date(date_labels="%b %y",date_breaks  ="1 month")
+    theme(axis.text.x = element_text(angle = 90))
+  
+  a = grid.arrange(g1,g2, nrow = 1)
+  return(a)
+}
+
+
+monthly_new_cases("ES")
+
+
+
 ########################################################
 
 ourData = read.csv('Data/final.csv')
 View(ourData)
 
 ourData$caseFatality = ourData$totalcountdeaths/ourData$totalcountconfirmed *10000
-#move case column
+#move case column 
 ourData = ourData[,c(1:4,12,5:11)]
+
+overall.cf = sum(ourData$totalcountdeaths, na.rm= TRUE) / sum(ourData$totalcountconfirmed,na.rm= TRUE) *10000
+overall.cf
+
+data = subset(ourData, county == "Alameda")
+c = sum(data$totalcountdeaths, na.rm= TRUE) 
+
+get.percent.dead = function(location, dataset){
+  specific.data = subset(dataset, county == location)
+  num_dead = sum(specific.data$totalcountdeaths, na.rm= TRUE)
+  overall_dead = sum(dataset$totalcountdeaths, na.rm = TRUE)
+  percent = (num_dead/overall_dead) * 100
+  return(percent)
+}
+get.percent.dead("Alameda", ourData)
+
+a = aggregate(totalcountdeaths~county, ourData, sum)
+head(a)
+
+ggplot(a)+
+  geom_bar(aes(x=county,y= totalcountdeaths ))
 
 plot_by_calif_county = function(place){
     
