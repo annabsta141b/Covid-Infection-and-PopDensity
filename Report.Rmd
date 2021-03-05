@@ -38,11 +38,7 @@ names(deaths_sum)=c('date','total_n_deaths')
 
 ```{r, include=FALSE}
 cases_sum$avg_new_cases=stats::filter(cases_sum$total_n_cases, filter = rep(1/7, 7), sides = 1)
-
-
 deaths_sum$avg_new_deaths=stats::filter(deaths_sum$total_n_deaths, filter = rep(1/7, 7), sides = 1)
-
-
 ```
 
 
@@ -57,8 +53,6 @@ Cali_Cases <- cases_sum %>%
 
 # Turn it interactive with ggplotly
 Cali_Cases <- ggplotly(Cali_Cases)
-
-
 
 Cali_Deaths <- deaths_sum %>%
   ggplot( aes(x=date, y=total_n_deaths)) +
@@ -99,7 +93,6 @@ Iraq_Cases <- iraq_area %>%
 # Turn it interactive with ggplotly
 Iraq_Cases <- ggplotly(Iraq_Cases)
 
-
 Iraq_Deaths <- iraq_area %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
     geom_area(fill="lightpink", alpha=0.5) +
@@ -122,7 +115,6 @@ Spain_Cases <- spain_density %>%
 
 # Turn it interactive with ggplotly
 Spain_Cases <- ggplotly(Spain_Cases)
-
 
 Spain_Deaths <- spain_density %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
@@ -235,17 +227,17 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
+![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
 
 Figure X. Population Density in California. For mapping methods see: Making maps with R)
 
 We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
+![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
 
 Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
+![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
