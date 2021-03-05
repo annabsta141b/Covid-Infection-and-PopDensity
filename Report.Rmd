@@ -4,6 +4,7 @@ output:
   html_document:
     number_sections: true
 ---
+Names: Ana, Mary, Cameron, Chritina
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,6 +17,8 @@ library(plotly)
 library(hrbrthemes)
 library(gridExtra)
 library(tidyverse)
+library(lmerTest)
+library(scales)
 source(file="mergeDatasets.R")
 ```
 
@@ -232,6 +235,215 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
+
+Figure X. Population Density in California. For mapping methods see: Making maps with R)
+
 We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
+
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
+
+Figure X. July 2020 case count. For mapping methods see: Making maps with R
+
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
+
+Figure X. January 2020 case count. For mapping methods see: Making maps with R
+
+
+```{r include=FALSE}
+
+
+final=read.csv("Data/final.csv")
+
+which(is.na(final))
+final=drop_na(final)
+which(is.na(final)) #good
+
+#sapply(final,class)
+final$MetCode=as.factor(final$MetCode)
+final$county=as.factor(final$county)
+final$date=as.factor(final$date)
+
+
+
+```
+         
+```{r include=FALSE}
+#grab our potential predictors and response, MetCode is our treatment group
+dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Pop_Estimate","MetCode","totalcountconfirmed"),]
+#look for any particular parterns. The clearist is household income and povery rates--unsurpisingly
+#pairs(Filter(is.numeric, dat))
+
+dat
+
+```
+
+Our proposed model seeks to determine a casual relationship between an area's metropolitan status and Covid-19 infection rates. As previously stated, we assume the independent fixed effects of elder ratio and poverty percent contribute underlying effects in determining both whether a county is labeled as metropolitan and its associated infection rates.
+
+It is under our assumption that metropolitan locations tend to have lower numbers of elderly and higher levels of poverty compared to nonmetropolitan areas. 
+
+The lme4 package was used to fit our Linear Mixed-Effects Models. Since the data contained a multitude of observations for different counties over the course of several days, we assumed existing random, unmeasurable effects were present in our data. In this model, we define county and date effects as random effects we cannot control.
+
+Our Linear Mixed-Effects Model takes the following form:
+
+
+$$y = {X\beta} + {Zu} + {\varepsilon}$$
+Where
+- $y$ represents an $N \times 1$ vector of our fatality rates. 
+
+- $X$ is a $N \times p$ matrix of our predictor variables. 
+
+- $\beta$ is a $p \times 1$ column of our fixed effects coefficients. 
+
+- $Z$ is a $N \times q:groups$ matrix for the $q$ random effects for our county and state variables. 
+
+- Finally, $\epsilon$ captures the portion of $y$ not included by the rest of the model.
+
+(McCullagh, P, & Nelder, J. A. (1989). Generalized Linear Models, 2nd ed. Chapman & Hall/CRC Press.)
+
+
+The distribution of infection rates was highly right skewed, so a log(x+1) transformation was applied to the numeric variables in the data. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow=c(1,2))
+#Transformation
+#check the distribution of our response and predictors
+hist(final$new_casesrate,col = rainbow(5), xlab="InfectionRate", main="Distribution before Transformation") #this is very right skewed
+#normalize
+#hist(log(final$new_casesrate),col = rainbow(5)) #lots better
+#adjust for the 0 value rates
+hist(log(final$new_casesrate+1),col = rainbow(5),xlab="log(InfectionRate+1)", main="After Transformation")
+
+dat=dat[-c(which(final$new_casesrate<0)),]
+
+log_dat=log((Filter(is.numeric,dat))+1)
+
+transformed= cbind(log_dat, Filter(is.factor,dat))
+#transformed
+transformed=(drop_na(transformed))
+```
+
+A quick comparision of the average infection rates between our treatment and control indicates a higher average present in metropolitan coded counties.
+
+```{r}
+
+boxplot(transformed$new_casesrate~transformed$MetCode,main='Comparision of Averages Between Groups',
+xlab='MetroCode',ylab='Infection Rate',col=rainbow(5))
+```
+
+
+
+
+A Mixed Effects Linear model was fit without the use of propensity score weighting.
+
+In the case of this model, our treatment was MetroCode=1 (metropolitan county) and our control was MetroCode=0 (non-metropolitan county)
+
+```{r echo=TRUE}
+
+model1 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed)
+summary(model1)
+
+```
+
+We found the treatment effect to be statistically significant at p=0.1. Poverty rates were not found to have a significant effect while elder ratios were statistically significant with p<0.001. 
+
+However, our previous analysis leads us to believe both poverty rates and elder ratios influence whether an area is determined as metropolitan or not. 
+
+To assess the extend of this bias during assignment, we will compare the imbalance present.
+
+MetroCodes against Elder Ratio
+
+```{r echo=FALSE}
+
+transformed$MetCode=as.numeric(as.character(transformed$MetCode))
+
+## Balance analysis
+model2 = lm(elder_ratio~MetCode,data = transformed)
+summary(model2)#clearly there is bias between 
+
+```
+
+
+
+MetroCodes against Poverty Ratio
+
+
+```{r}
+
+
+## Balance analysis
+model3 = lm((Poverty_Percent/100)~MetCode,data = transformed)
+summary(model3)#clearly there is bias between 
+
+```
+
+In both cases there appears to be strong imbalance between MetroCode levels and our two covariates as p<0.01. This suggests there may be selection bias present. We aim to use propensity score to reduce these effects.
+
+Propensity scores were determined using logistic regression with our treatment as the response against our two covariates. The probabilities estimated by the logistic regression model were processed and inverted. The final scores were used as weights in the final Linear Mixed Model. 
+
+
+```{r echo=FALSE}
+#transformed$MetCode = #relevel(transformed$MetCode,ref='0')
+
+
+transformed$MetCode = relevel(dat$MetCode,ref="0")
+models = glm(MetCode~(elder_ratio)+I(Poverty_Percent/100),family=binomial(logit), data = transformed)
+prob = models$fitted.values
+pscore = ifelse(transformed$MetCode=="1",prob,(1-prob))
+transformed$pscore=pscore
+
+
+quantile(pscore)
+
+#pscore
+weight = 1/pscore
+summary(models)
+
+col.alpha<-function(color, alpha){
+  code=col2rgb(color)/256
+  rgb(code[1],code[2],code[3],alpha)
+}
+#better  hist
+hist(unique(transformed$pscore[transformed$MetCode==1]), breaks=25, col=col.alpha("red",.6), freq=F, ylim=c(0,5), xlab="Propensity Score", ylab="", main="Propensity Score Distribution")
+hist(unique(transformed$pscore[transformed$MetCode==0]), breaks=25, col=col.alpha("lightblue",.6), freq=F, ylim=c(0,5), xlab="Propensity Score", ylab="", main="",add=T)
+legend(.4, 5, legend=c("Metro", "NonMetro"),
+       col=c("red", "blue"),fill = c("red", "lightblue") )
+
+#likely won't be much change, the confunding effects are too large
+```
+
+The distribution of the propensity scores indicates there is not a significant difference in scoring between the treatment and control group despite the existence of confounding effects. The propensity scoring and matching method used may be improved upon with alternate methods.
+
+
+
+
+# Weighted Model
+```{r}
+
+model_new7 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed,weights = weight)
+summary(model_new7) #1|pred -> predbecomes random effect here
+```
+
+The final mixed effects model with propensity score weights is not significantly different than the model without. The difference in estimates is not marginally different from the unweighted model. Our treatment group has a positive relationship with the infection rate (p<0.01), indicating metropolitan counties may have high infection rates than nonmetropolitan counties. 
+
+
+
+# Sensitivity Analysis
+```{r}
+
+plot(model_new7,type=c('p','smooth'))
+
+
+
+qqnorm(unique(resid(model_new7)))
+qqline(resid(model_new7))
+
+anova(model_new7)
+```
+
+The final Linear Mixed-Effects model indicates an increase in
+
+
+
 
 
