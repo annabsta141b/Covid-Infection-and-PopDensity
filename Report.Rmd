@@ -178,9 +178,7 @@ Our main hypothesis for this research question is that population density will h
 
 ## Data Summary
 
-To isolate the problem, we will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that the results we see are the effect of population density. This study focuses on California, and the key regions of Spain and Iraq due to their similarity to California (more information pertaining to this decision will be communicated in the remainder of the report).
-
-Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset, which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
+Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. To isolate the problem, we will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that the results we see are the effect of population density. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset, which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
 
 
 # Background
@@ -195,7 +193,7 @@ The second dataset is from the New York Times. This data contains county level i
 
 The third data source is the US census. This Organization is a part of the US government who counts the entire nation every decade. As a census, by definition the target population is every resident of the United States, and their sampling mechanism is to speak to every household in the entire country and count all residents. The main variable that we used from this dataset is the population density per county. This is calculated as the population per square mile. We used this dataset as it could give us the best idea of the true population density. 
 
-The fourth and fifth dataset come from ____ ; target population, sampling mechanism; explain variables; We used this data to
+**The fourth and fifth dataset come from ____ ; target population, sampling mechanism; explain variables;** We used this data to
 
 Similar studies have looked at the effects of population density on the COVID-19 pandemic (Peters, 2020; Wong, 2020; Almagro, 2020). Previous studies have shown that it is an important factor in community-spread diseases (Tarwater 2001). This report adds to the existing literature as it adds the analysis of causality in the discussion.
 
@@ -214,6 +212,6 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
-We also looked at the case count in each of the counties. These are represented in Figures (X-X) below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
+We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
 
 
