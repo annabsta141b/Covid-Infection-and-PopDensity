@@ -2,6 +2,8 @@
 title: "The Effect of Population Density on COVID-19 Case Rates"
 output:
   html_document:
+    df_print: paged
+    graphics: yes
     number_sections: true
 ---
 Names: Ana, Mary, Cameron, Chritina
@@ -38,11 +40,7 @@ names(deaths_sum)=c('date','total_n_deaths')
 
 ```{r, include=FALSE}
 cases_sum$avg_new_cases=stats::filter(cases_sum$total_n_cases, filter = rep(1/7, 7), sides = 1)
-
-
 deaths_sum$avg_new_deaths=stats::filter(deaths_sum$total_n_deaths, filter = rep(1/7, 7), sides = 1)
-
-
 ```
 
 
@@ -57,8 +55,6 @@ Cali_Cases <- cases_sum %>%
 
 # Turn it interactive with ggplotly
 Cali_Cases <- ggplotly(Cali_Cases)
-
-
 
 Cali_Deaths <- deaths_sum %>%
   ggplot( aes(x=date, y=total_n_deaths)) +
@@ -99,7 +95,6 @@ Iraq_Cases <- iraq_area %>%
 # Turn it interactive with ggplotly
 Iraq_Cases <- ggplotly(Iraq_Cases)
 
-
 Iraq_Deaths <- iraq_area %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
     geom_area(fill="lightpink", alpha=0.5) +
@@ -122,7 +117,6 @@ Spain_Cases <- spain_density %>%
 
 # Turn it interactive with ggplotly
 Spain_Cases <- ggplotly(Spain_Cases)
-
 
 Spain_Deaths <- spain_density %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
@@ -183,8 +177,20 @@ Our main hypothesis for this research question is that population density will h
 
 Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. To isolate the problem, we will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that the results we see are the effect of population density. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset, which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
 
+Dataset | Components Used
+------- | ---------------
+[WHO COVID Dataset](https://covid19.who.int/WHO-COVID-19-global-data.csv) | Number of new cases and deaths are calculated by subtracting previous cumulative total counts from the current count.
+[NY Times COVID Dataset](https://github.com/nytimes/covid-19-data/blob/master/live/us-counties.csv) | Total COVID cases and deaths per county in each state of the USA
+[County Household Sizes and Population Densities](https://covid19.census.gov/datasets/average-household-size-and-population-density-county/data) |  Population density for each county in the USA
+[Urban County Codes](https://www.ers.usda.gov/data-products/county-level-data-sets/) | Population Estimate, Number of elders over 65, Housing Density
+[Demographic Information](https://www.ers.usda.gov/data-products/county-level-data-sets/) | Poverty estimates, Median household income
+
 
 # Background
+
+## Proxy For Countries
+
+Our choice to use California instead of any country was because of the data we had access to. Since we would like to asses the population density differences in subregions of a nation, we need access to more granular data than what the WHO COVID dataset has to offer.
 
 ## Data Specifics
 
@@ -223,17 +229,17 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
+![](Maps/Pop_dense.png)
 
 Figure X. Population Density in California. For mapping methods see: Making maps with R)
 
 We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
+![](Maps/July_casecount.png)
 
 Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
-[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
+![](Maps/Jan_casecount.png)
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
@@ -432,7 +438,11 @@ anova(model_new7)
 
 The final Linear Mixed-Effects model indicates an increase in
 
+# Session info {-}
 
+```{r}
+sessionInfo()
+```
 
 
 
