@@ -4,6 +4,7 @@ output:
   html_document:
     number_sections: true
 ---
+Names: Ana, Mary, Cameron, Chritina
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -222,7 +223,19 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
+
+Figure X. Population Density in California. For mapping methods see: Making maps with R)
+
 We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
+
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
+
+Figure X. July 2020 case count. For mapping methods see: Making maps with R
+
+[]!(https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
+
+Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
 
 ```{r include=FALSE}
