@@ -230,7 +230,16 @@ Similar studies have looked at the effects of population density on the COVID-19
 
 In this section, we will be giving a comparative international view of the COVID-19 pandemic, complimented by county-level data in California. We will be looking at trends in the data and discussing any abnormalities found. 
 
-First, we looked at the global pandemic rates in each country. As we are interested in the county-level data in California because of its range of rural and urban environments, we focused on two nations that have similar population densities to California as a whole. These nations are Spain and Iraq. 
+First, we looked at the global pandemic rates in each country. As we are interested in the county-level data in California because of its range of rural and urban environments, we focused on two nations that have similar population densities to California as a whole. These nations are Spain and Iraq.
+
+```{r, echo=FALSE, results='show'}
+Spain_Cases
+Spain_Deaths
+Iraq_Cases
+Iraq_Deaths
+Cali_Cases
+Cali_Deaths
+```
 
 **lines 37 - 90 monthly new cases function eda who file**
 We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
@@ -255,6 +264,9 @@ Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
+```{r, echo=FALSE, results='show'}
+county_code_cases
+```
 
 ```{r include=FALSE}
 final=read.csv("Data/final.csv")
