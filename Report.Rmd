@@ -180,8 +180,20 @@ Our main hypothesis for this research question is that population density will h
 
 Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. To isolate the problem, we will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that the results we see are the effect of population density. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset, which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
 
+Dataset | Components Used
+------- | ---------------
+[WHO COVID Dataset](https://covid19.who.int/WHO-COVID-19-global-data.csv) | Number of new cases and deaths are calculated by subtracting previous cumulative total counts from the current count.
+[NY Times COVID Dataset](https://github.com/nytimes/covid-19-data/blob/master/live/us-counties.csv) | Total COVID cases and deaths per county in each state of the USA
+[County Household Sizes and Population Densities](https://covid19.census.gov/datasets/average-household-size-and-population-density-county/data) |  Population density for each county in the USA
+[Urban County Codes](https://www.ers.usda.gov/data-products/county-level-data-sets/) | Population Estimate, Number of elders over 65, Housing Density
+[Demographic Information](https://www.ers.usda.gov/data-products/county-level-data-sets/) | Poverty estimates, Median household income
+
 
 # Background
+
+## 
+
+
 
 ## Data Specifics
 
