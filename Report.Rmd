@@ -325,7 +325,7 @@ transformed=(drop_na(transformed))
 
 A quick comparision of the average infection rates between our treatment and control indicates a higher average present in metropolitan coded counties.
 
-```{r}
+```{r echo=FALSE}
 
 boxplot(transformed$new_casesrate~transformed$MetCode,main='Comparision of Averages Between Groups',
 xlab='MetroCode',ylab='Infection Rate',col=rainbow(5))
@@ -338,7 +338,7 @@ A Mixed Effects Linear model was fit without the use of propensity score weighti
 
 In the case of this model, our treatment was MetroCode=1 (metropolitan county) and our control was MetroCode=0 (non-metropolitan county)
 
-```{r echo=TRUE}
+```{r echo=FALSE}
 
 model1 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed)
 summary(model1)
@@ -368,7 +368,7 @@ summary(model2)#clearly there is bias between
 MetroCodes against Poverty Ratio
 
 
-```{r}
+```{r echo=FALSE}
 
 
 ## Balance analysis
@@ -381,7 +381,7 @@ In both cases there appears to be strong imbalance between MetroCode levels and 
 
 Propensity scores were determined using logistic regression with our treatment as the response against our two covariates. The probabilities estimated by the logistic regression model were processed and inverted. The final scores were used as weights in the final Linear Mixed Model. 
 
-
+*Pscores*
 ```{r echo=FALSE}
 #transformed$MetCode = #relevel(transformed$MetCode,ref='0')
 
@@ -418,7 +418,7 @@ The distribution of the propensity scores indicates there is not a significant d
 
 
 # Weighted Model
-```{r}
+```{r echo=FALSE}
 
 model_new7 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed,weights = weight)
 summary(model_new7) #1|pred -> predbecomes random effect here
@@ -430,7 +430,7 @@ The final mixed effects model with propensity score weights is not significantly
 
 # Sensitivity Analysis
 
-```{r}
+```{r echo=FALSE}
 
 plot(model_new7,type=c('p','smooth'))
 
