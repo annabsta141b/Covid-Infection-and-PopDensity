@@ -190,7 +190,19 @@ Dataset | Components Used
 
 ## Proxy For Countries
 
-Our choice to use California instead of any country was because of the data we had access to. Since we would like to asses the population density differences in subregions of a nation, we need access to more granular data than what the WHO COVID dataset has to offer.
+Our choice to use California instead of any country was because of the data we had access to. While we could compare the population densities between nations and compare the effects of the pandemic on them, we chose not to for two reasons:
+
+1. **Interpretability**: The purpose of our analysis is to provide actionable insights for leaders of a region to determine how to distribute resources. There is no leader of the entire world who decides how to distribute resources among countries. Thus we must work at a scale that is governed by a single body. With California, the governor has control over how resources can be distributed to counties.
+
+2. **Scale**: We would like to have our regions subdivided into the smallest possible chunks to give the best description of how the population is distributed over a region. The level of concentration or distribution of a country's population cannot be quantified without regional data. For example, Canadas population is very concentrated around the southern border despite having large amounts of relatively unpopulated land in the north. The national population density would be lowered by the large amounts of uninhabited area despite the population being relatively concentrated.
+
+To show how our results from California can be used at a national level, we give two examples of countries that have a similar area and similar population density as California:
+
+1. **[Iraq](https://en.wikipedia.org/wiki/Iraq)**: 169,235 square miles compared to 163,696 of [California](https://en.wikipedia.org/wiki/California) (Notably with a similar population density too, at 214 per square mile).
+
+2. **[Spain](https://en.wikipedia.org/wiki/Demographics_of_Spain)**: 237 people per square mile compared to 254 of [California](https://en.wikipedia.org/wiki/California).
+
+Although we do not have access to regional level data for these countries, we can see how they are similar to California geographically.
 
 ## Data Specifics
 
@@ -245,8 +257,6 @@ Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
 
 ```{r include=FALSE}
-
-
 final=read.csv("Data/final.csv")
 
 which(is.na(final))
@@ -257,9 +267,6 @@ which(is.na(final)) #good
 final$MetCode=as.factor(final$MetCode)
 final$county=as.factor(final$county)
 final$date=as.factor(final$date)
-
-
-
 ```
          
 ```{r include=FALSE}
@@ -269,7 +276,6 @@ dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square
 #pairs(Filter(is.numeric, dat))
 
 dat
-
 ```
 
 Our proposed model seeks to determine a casual relationship between an area's metropolitan status and Covid-19 infection rates. As previously stated, we assume the independent fixed effects of elder ratio and poverty percent contribute underlying effects in determining both whether a county is labeled as metropolitan and its associated infection rates.
