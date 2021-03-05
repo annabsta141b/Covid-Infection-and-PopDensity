@@ -1,0 +1,62 @@
+---
+title: "The Effect of Population Density on COVID-19 Case Rates"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Abstract
+
+The COVID-19 pandemic, while ubiquitous worldwide, has differentially affected different segments of the population. Regional demographic factors, such as population density, could have an impact on this respiratory, community transmitted disease. This study addresses the association and impact of demographic factors on COVID-19 rates, particularly in California Counties. California’s counties were selected due to their large range in population densities (1.6 - 17,179.2 people per square mile) and diversity across the rural-urban continuum. State model type. In particular, this study calculates a propensity score to explore if there is a causal relationship between the population density and COVID-19 case rates.  State finding 1. State finding 2. These findings indicate which areas are at higher risk during pandemic outbreaks and could critically help policymakers allocate funding and healthcare to these regions.
+
+
+# Introduction
+
+The ongoing COVID-19 pandemic has impacted lives worldwide, but residents of different regions have been differentially impacted. Since COVID-19 regulations have often been handled at the national or state level, the impact of subregional influences on case counts needs to be addressed to allocate aid where it is needed most. Additional aid to vulnerable subregions could hinder the progress of the virus as it spreads throughout an entire country and keep more of the overall population healthy. One particular factor we are interested in is the population distribution over a country, and how differing population densities between  subregions plays a role in transmission rates of the disease.
+
+With that in mind, this study looks to answer one main research question:
+
+**What is the relationship between population distribution and COVID-19 case rates within a country, and is it a causal relationship?**
+
+Our main hypothesis for this research question is that population density will have a positive relationship with COVID-19 case rates. Additionally, we hypothesize that a higher population density causes increased COVID-19 case rates. Since COVID-19 is a respiratory illness that spreads readily through the community via the air (Peters, 2020). The primary reasoning behind our hypotheses is that higher densities of people breathing in proximity would theoretically make it easier to transmit the virus. Thus, areas with more people per square mile will have a proportionally higher rate of transmission.
+
+To fully address this problem, our model will adjust for other regional socioeconomic factors, such as the percentage of the elderly and household income, to be sure that population density is the item being studied. This study focuses on California, and the key regions of Spain and Iraq due to their similarity to California (more information pertaining to this decision will be communicated in the remainder of the report). 
+
+Our analysis will use the state of California as a proxy for other countries and we will look at daily case numbers from March 2020 to February 2021. The data encapsulates several axes of COVID-19 metrics, including the number of cases, number of deaths, and case-mortality rate. The sources of data include the country-level WHO dataset (2021), and New York Times data dataset , which has the added advantage of including county-level metrics. Population density, and compounding factors such as socioeconomic data and age demographics are also included. The summaries of and links to these datasets and what they provided is listed in Table 1 below. Model identification and diagnostics, and a propensity score analysis will address the question of the association between population density and COVID-19 rates. Policymakers could use the results of this report to specifically allocate funds to best address the needs of their county. Additionally, the general population or those in the healthcare field may be interested in the results of this report.
+
+
+# Background
+
+This project utilizes a few different data sources because they each shed a different light on the socio-demographic realities of COVID-19. The different data sources are summarized in Table 1. 
+
+The first data source, the WHO COVID-19 global dataset, was compiled by The World Health Organization to complete their global mission of freely communicating global health data. The target population for this dataset was the entire world population, reported by country of residence. The sampling mechanism was through the reporting of sovereign nations. This sampling mechanism may have had differences between countries as some have more stringent reporting requirements than others. The variables utilized from this dataset were the number of new cases and deaths at a country level. We used this dataset to enhance the analysis at a global level, incorporating nations with similar population densities to California.
+
+The second dataset is from the New York Times. This data contains county level information about the number of confirmed COVID-19 cases (both new and total). The data is compiled for the New York Times by journalists across the nation who combine info from public health press conferences and meetings. The target population is the entire United States, and the sampling mechanism is, theoretically, every case reported at a state or county level. If a state or a county refused or neglected to communicate that information publicly, the data would not be represented in this database. The variables we used from this dataset were the total number of COVID-19 cases. This dataset was critical to the county-level component of the study, which chose to isolate the effects of population density in subregions which are more evenly urban or rural than the state as a whole.
+
+The third data source is the US census. This Organization is a part of the US government who counts the entire nation every decade. As a census, by definition the target population is every resident of the United States, and their sampling mechanism is to speak to every household in the entire country and count all residents. The main variable that we used from this dataset is the population density per county. This is calculated as the population per square mile. We used this dataset as it could give us the best idea of the true population density. 
+
+The fourth and fifth dataset come from ____ ; target population, sampling mechanism; explain variables; We used this data to
+
+Similar studies have looked at the effects of population density on the COVID-19 pandemic (Peters, 2020; Wong, 2020; Almagro, 2020). Previous studies have shown that it is an important factor in community-spread diseases (Tarwater 2001). This report adds to the existing literature as it adds the analysis of causality in the discussion.
+
+# Data Exploration Text
+
+In this section, we will be giving a comparative international view of the COVID-19 pandemic, complimented by county-level data in California. We will be looking at trends in the data and discussing any abnormalities found. 
+
+First, we looked at the global pandemic rates in each country. As we are interested in the county-level data in California because of its range of rural and urban environments, we focused on two nations that have similar population densities to California as a whole. These nations are Spain and Iraq. 
+
+**lines 37 - 90 monthly new cases function eda who file**
+We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
+  
+
+San Francisco has fewer case fatalities compared to Inyo during the entire time period. 
+
+This graph shows the case fatality rates per month for the respective counties. We also intended to plot Alpine county due to the very low population density,  however, people living in Alpine county had no mortalities. This could be due to the fact that nobody has yet had a fatal case of COVID-19. Alternatively, this could be because people in critical condition in this county are moved to another county to receive Critical Care treatment. It is impossible to know this from the information given.
+
+Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
+
+We also looked at the case count in each of the counties. These are represented in Figures (X-X) below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
+
+
