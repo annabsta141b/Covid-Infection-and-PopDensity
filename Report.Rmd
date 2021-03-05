@@ -188,9 +188,9 @@ Dataset | Components Used
 
 # Background
 
-## 
+## Proxy For Countries
 
-
+Our choice to use California instead of any country was because of the data we had access to. Since we would like to asses the population density differences in subregions of a nation, we need access to more granular data than what the WHO COVID dataset has to offer.
 
 ## Data Specifics
 
@@ -229,17 +229,17 @@ This graph shows the case fatality rates per month for the respective counties. 
 
 Next, we analyzed the trends in California. Below is a figure depicting the population density of all 58 counties in California. This shows that San Francisco (in the Bay area, central California) has the highest population density. The counties further East (largely mountainous and desert regions) have the lowest population densities. Note the variation in population density across counties, across orders of magnitude
 
-![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Pop_dense.png)
+![](Maps/Pop_dense.png)
 
 Figure X. Population Density in California. For mapping methods see: Making maps with R)
 
 We also looked at the case count in each of the counties. These are represented in Figures **(X-X)** below. While the pure number of cases changed from July (a relatively low-case point) to January (a relatively high-case point), the relative number of cases in each of the counties does not seem to change. This observation requires further statistical analysis to explore. 
 
-![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/July_casecount.png)
+![](Maps/July_casecount.png)
 
 Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
-![](https://github.com/cmdecesaris/Project-3/blob/6cb08c2af334f1628d85277738f1c96ecb2fc296/Maps/Jan_casecount.png)
+![](Maps/Jan_casecount.png)
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
@@ -437,7 +437,11 @@ anova(model_new7)
 
 The final Linear Mixed-Effects model indicates an increase in
 
+# Session info {-}
 
+```{r}
+sessionInfo()
+```
 
 
 
