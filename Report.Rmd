@@ -226,7 +226,7 @@ The third data source is the US census. This Organization is a part of the US go
 
 Similar studies have looked at the effects of population density on the COVID-19 pandemic (Peters, 2020; Wong, 2020; Almagro, 2020). Previous studies have shown that it is an important factor in community-spread diseases (Tarwater 2001). This report adds to the existing literature as it adds the analysis of causality in the discussion.
 
-# Data Exploration Text
+# Data Exploration
 
 In this section, we will be giving a comparative international view of the COVID-19 pandemic, complimented by county-level data in California. We will be looking at trends in the data and discussing any abnormalities found. 
 
