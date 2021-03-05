@@ -207,7 +207,6 @@ First, we looked at the global pandemic rates in each country. As we are interes
 
 **lines 37 - 90 monthly new cases function eda who file**
 We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
-  
 
 San Francisco has fewer case fatalities compared to Inyo during the entire time period. 
 
