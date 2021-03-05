@@ -58,8 +58,8 @@ monthly_new_cases = function(place_abbr){
     theme(axis.text.x = element_text(angle = 90))
 }
 
-monthly_new_cases("IQ")
-monthly_new_cases("ES")
+gCIQ =monthly_new_cases("IQ")
+gCES = monthly_new_cases("ES")
 
 
 monthly_num_dead = function(place_abbr){
@@ -84,8 +84,10 @@ monthly_num_dead = function(place_abbr){
     theme(axis.text.x = element_text(angle = 90))
 }
 
-monthly_num_dead("IQ")
-monthly_num_dead("ES")
+gIQ = monthly_num_dead("IQ")
+gES = monthly_num_dead("ES")
+
+grid.arrange(gCIQ, gCES, gIQ, gES)
 #####################################################
 
 cases_mortality_plot = function(place_abbr){
@@ -122,12 +124,13 @@ cases_mortality_plot = function(place_abbr){
     #scale_x_date(date_labels="%b %y",date_breaks  ="1 month")
     theme(axis.text.x = element_text(angle = 90))
   
-  a = grid.arrange(g1,g2, nrow = 1)
+  a = grid.arrange(g1,g2, nrow = 2)
   return(a)
 }
 
 
-monthly_new_cases("ES")
+gE = cases_mortality_plot("ES")
+GS = cases_mortality_plot("IQ")
 
 
 
@@ -162,8 +165,8 @@ ggplot(a)+
   geom_bar(aes(x=county,y= totalcountdeaths ))
 
 plot_by_calif_county = function(place){
-    
-  county.specific.data = subset(ourData, county == "Alpine")
+
+  county.specific.data = subset(ourData, county == place)
   #split into month and year
   county.specific.data$mo = strftime(county.specific.data$date, "%m")
   county.specific.data$yr <- strftime(county.specific.data$date, "%Y")
@@ -186,12 +189,13 @@ plot_by_calif_county = function(place){
     #scale_x_date(date_breaks  ="1 month")+
     scale_x_date(date_labels = "%Y %b",date_breaks = "1 month")+
     theme(axis.text.x = element_text(angle = 90))
+  
 }
 
-
-plot_by_calif_county("San Francisco")
-plot_by_calif_county("Inyo")
+g1 = plot_by_calif_county("San Francisco")
+g2 = plot_by_calif_county("Inyo")
 plot_by_calif_county("Alpine")
+grid.arrange(g1,g2,nrow = 2, ncol = 2)
 ######################################################################################
 
 #Global info on covid
