@@ -3,19 +3,21 @@ library(tidyverse)
 library(dplyr)
 library(plotly)
 library(lubridate)
+library(data.table)
 
 covid <- read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
 
 View(covid)
 names(covid)
+#date range "2020-03-18" "2021-02-22"
 
-aggregate(New_cases~country)
+covid = subset(covid, between(covid$Date_reported,"2020-03-18", "2021-02-22"))
+
 
 USA = subset(covid, Country_code=="US")
 #USA$Date_reported = format(USA$Date_reported, "%Y/%b")
 head(USA)
 View(USA)
-
 
 # #num new cases and day USA, need to filter some dates???
 # ggplot(USA)+
