@@ -48,13 +48,14 @@ merged$Poverty_Percent=as.numeric(as.character(merged$Poverty_Percent))
 
 merged$Median_Household_Income=as.numeric(as.character(gsub(",","",merged$Median_Household_Income)))
 merged$elder_ratio=merged$Total_age65plus/merged$Pop_Estimate
-merged$new_casesrate=merged$newcountconfirmed/merged$Pop_Estimate*10000 #per10k
+merged$new_casesrate=(merged$newcountconfirmed/merged$Pop_Estimate)*10000 #per10k
 
 
 
 #MetCode: 1-> metropoliton, 0-> nonmetropolitan
 merged$MetCode <- factor(ifelse(as.numeric(merged$Urban_Influence_Code_2013) < 3, "1", "0"))
 
+#date to first date
 
 #export working dataset
 final=merged

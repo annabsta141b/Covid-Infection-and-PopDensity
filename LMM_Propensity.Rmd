@@ -24,7 +24,7 @@ which(is.na(final)) #good
          
 ```{r}
 #grab our potential predictors and response, MetCode is our treatment group
-dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Median_Household_Income","Pop_Estimate","MetCode","totalcountconfirmed"),]
+dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Median_Household_Income","Pop_Estimate","MetCode","totalcountconfirmed","PopDensity_per_square_mile_of_land_area"),]
 #look for any particular parterns. The clearist is household income and povery rates--unsurpisingly
 #pairs(Filter(is.numeric, dat))
 
@@ -34,10 +34,8 @@ dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square
 
 
 ```{r}
-
-dat$MetCode=as.factor(dat$MetCode)
-dat$county=as.factor(dat$county)
-dat$date=as.factor(dat$date)
+sapply(final,class)
+dat$county=
 #Transformation
 #check the distribution of our response and predictors
 hist(final$new_casesrate,col = rainbow(5)) #this is very right skewed
@@ -52,31 +50,46 @@ log_dat=log((Filter(is.numeric,dat))+1)
 
 transformed= cbind(log_dat, Filter(is.factor,dat))
 
-
 ```
 
 ```{r}
 #fit unweighted 'naked' model
-model1 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+(1|county)+(1|date),data = transformed)
+model1 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+Poverty_Percent+(1|county)+(1|date),data = transformed)
 summary(model1)
 
 ```
 
 ```{r}
 ## Balance analysis
-model2 = lm(elder_ratio~MetCode,data = transformed)
+model2 = glm(MetCode~elder_ratio+Poverty_Percent,data = transformed)
 summary(model2)#clearly there is bias between 
-transformed
-#transformed$MetCode = relevel(transformed$MetCode,ref='0')
-models = glm(MetCode~elder_ratio+Median_Household_Income,family='binomial', data = transformed)
+
+
+
+
+
+
+boxplot(transformed$new_casesrate~transformed$MetCode,main='Comparision of Averages Between Groups',
+xlab='MetroCode',ylab='Infection Rate',col=rainbow(5))
+
+#transformed$MetCode = #relevel(transformed$MetCode,ref='0')
+models = glm(MetCode~.,family=binomial, data = transformed)
 prob = models$fitted.values
 pscore = ifelse(dat$new_casesrate=='1',prob,(1-prob))
+1-pscore
+#pscore
 hist(pscore)
 weight = 1/pscore
-
-model_new7 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+(1|county)+(1|date),data = transformed,weights = weight)
+hist(weight)
+model_new7 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Poverty_Percent+(1|date)+(1|county),data = transformed,weights = weight)
 summary(model_new7) #1|pred -> pred becomes random effect here
+
 plot(model_new7)
+qqnorm(resid(model_new7))
+qqline(resid(model_new7))
+
+shapiro.test(resid(model_new7))
+ranova(model_new7)
 ```
 
 
@@ -95,34 +108,31 @@ summary(m.out0)
 ```{r}
 # 1:1 NN PS matching w/o replacement
 m.out1 <- matchit(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area,
-                 method = "nearest", distance = "glm", data = transformed)
+                 method = "nearest", distance = "glm", data = dat)
 
 summary(m.out1, un = FALSE)
+m.out1$nn
 ```
 
 ```{r}
-plot(m.out1, type = "jitter", interactive = FALSE)
-plot(m.out1, type = "qq", interactive = FALSE)
+plot(m.out1, type = "jitter", interactive = F)
+plot(m.out1, type = "qq", interactive = F)
 ```
-
 
 ```{r}
-library(rollmatch)
-?reduce_data
-dat$date=as.Date.numeric(dat$date)
-reduced_data <- reduce_data(data = dat, treat = "MetCode",
-tm = "date", entry = "date",
-id = "county", lookback = 1)
-fm <- as.formula(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area)
-vars <- all.vars(fm)
-scored_data <- score_data(reduced_data = reduced_data,
-model_type = "logistic", match_on = "logit",
-fm = fm, treat = "treat",
-tm = "quarter", entry = "entry_q", id = "indiv_id")
-output <- rollmatch(scored_data, data=rem_synthdata_small, treat = "treat",
-tm = "quarter", entry = "date", id = "indiv_id",
-vars = vars, lookback = 1, alpha = .2,
-standard_deviation = "average", num_matches = 3,
-replacement = TRUE)
+df.match <- match.data(m.out1)[1:ncol(transformed)]
+df.match
+??CreateTableOne
+install.packages('pacman')
+pacman::p_load(tableone)
+table4 <- CreateTableOne(vars = c('elder_ratio', 'MetCode', 'Poverty_Percent','HouseDensity.per.square.mile.of.land.area'), 
+                         data = df.match, 
+                        
+                         strata = 'MetCode')
+
+table4
 ```
+
+
+
 
