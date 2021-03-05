@@ -10,36 +10,119 @@ output: html_document
 ```{r}
 library(lmerTest)
 library(tidyverse)
-attach(final)
+require(survival)
+library(nnet)
+
+final=read.csv("Data/final.csv")
 
 which(is.na(final))
 final=drop_na(final)
 which(is.na(final)) #good
-names(final)
+
 
 ```
          
 ```{r}
+#grab our potential predictors and response, MetCode is our treatment group
+dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Median_Household_Income","Pop_Estimate","MetCode","totalcountconfirmed"),]
+#look for any particular parterns. The clearist is household income and povery rates--unsurpisingly
+#pairs(Filter(is.numeric, dat))
 
-dat = final[,c("county"  ,'new_casesrate','elder_ratio','PopCode','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Median_Household_Income","Pop_Estimate","ICU_Beds"),]
 
-model1 = lmer(new_casesrate~elder_ratio+factor(PopCode)+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate)+(1|county)+(1|date),data = dat)
+
+```
+
+
+```{r}
+
+dat$MetCode=as.factor(dat$MetCode)
+dat$county=as.factor(dat$county)
+dat$date=as.factor(dat$date)
+#Transformation
+#check the distribution of our response and predictors
+hist(final$new_casesrate,col = rainbow(5)) #this is very right skewed
+#normalize
+hist(log(final$new_casesrate),col = rainbow(5)) #lots better
+#adjust for the 0 value rates
+hist(log(final$new_casesrate+1),col = rainbow(5)) 
+
+dat=dat[-c(which(final$new_casesrate<0)),]
+dat
+log_dat=log((Filter(is.numeric,dat))+1)
+
+transformed= cbind(log_dat, Filter(is.factor,dat))
+
+
+```
+
+```{r}
+#fit unweighted 'naked' model
+model1 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+(1|county)+(1|date),data = transformed)
 summary(model1)
 
 ```
 
 ```{r}
 ## Balance analysis
-model2 = lm(elder_ratio~PopCode,data = dat)
+model2 = lm(elder_ratio~MetCode,data = transformed)
 summary(model2)#clearly there is bias between 
-
-dat$PopCode = relevel(dat$PopCode,ref='0')
-models = glm(PopCode~elder_ratio+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate),family = binomial,data = dat)
+transformed
+#transformed$MetCode = relevel(transformed$MetCode,ref='0')
+models = glm(MetCode~elder_ratio+Median_Household_Income,family='binomial', data = transformed)
 prob = models$fitted.values
 pscore = ifelse(dat$new_casesrate=='1',prob,(1-prob))
-
+hist(pscore)
 weight = 1/pscore
 
-model_new = lmer(new_casesrate~elder_ratio+factor(PopCode)+I(Poverty_Estimate/Pop_Estimate)+I(ICU_Beds/Pop_Estimate)+(1|county)+(1|date),data = dat,weights = weight)
-summary(model_new) #interesting
+model_new7 = lmer(new_casesrate~elder_ratio+factor(MetCode)+Median_Household_Income+(1|county)+(1|date),data = transformed,weights = weight)
+summary(model_new7) #1|pred -> pred becomes random effect here
+plot(model_new7)
 ```
+
+
+
+```{r}
+#using mathcit
+
+library(MatchIt)
+m.out0 <- matchit(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area,       method = NULL, distance = "glm", data=transformed)
+
+
+summary(m.out0)
+#balance: Std. N Diff ~~0, Var. rat ~~1
+#we can see Median_Household_Income is wayy off balance
+```
+```{r}
+# 1:1 NN PS matching w/o replacement
+m.out1 <- matchit(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area,
+                 method = "nearest", distance = "glm", data = transformed)
+
+summary(m.out1, un = FALSE)
+```
+
+```{r}
+plot(m.out1, type = "jitter", interactive = FALSE)
+plot(m.out1, type = "qq", interactive = FALSE)
+```
+
+
+```{r}
+library(rollmatch)
+?reduce_data
+dat$date=as.Date.numeric(dat$date)
+reduced_data <- reduce_data(data = dat, treat = "MetCode",
+tm = "date", entry = "date",
+id = "county", lookback = 1)
+fm <- as.formula(MetCode ~ elder_ratio+Median_Household_Income+Poverty_Percent+HouseDensity.per.square.mile.of.land.area)
+vars <- all.vars(fm)
+scored_data <- score_data(reduced_data = reduced_data,
+model_type = "logistic", match_on = "logit",
+fm = fm, treat = "treat",
+tm = "quarter", entry = "entry_q", id = "indiv_id")
+output <- rollmatch(scored_data, data=rem_synthdata_small, treat = "treat",
+tm = "quarter", entry = "date", id = "indiv_id",
+vars = vars, lookback = 1, alpha = .2,
+standard_deviation = "average", num_matches = 3,
+replacement = TRUE)
+```
+
