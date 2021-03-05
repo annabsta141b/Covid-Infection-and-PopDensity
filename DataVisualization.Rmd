@@ -50,7 +50,7 @@ Cali_Cases <- cases_sum %>%
   ggplot( aes(x=date, y=total_n_cases)) +
     geom_area(fill="lightpink", alpha=0.5) +
     geom_line(aes(x=date, y=avg_new_cases,color='7-Day Running Average')) +
-    labs(x="Date", y="New Cases",title = "Covid Cases in California", color = "Legend") +
+    labs(x="Date", y="New Cases",title = "COVID Cases Over Time in California", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -62,7 +62,7 @@ Cali_Deaths <- deaths_sum %>%
   ggplot( aes(x=date, y=total_n_deaths)) +
     geom_area(fill="lightpink", alpha=0.5) +
     geom_line(aes(x=date, y=avg_new_deaths,color='7-Day Running Average')) +
-    labs(x="Date", y="New Deaths",title = "Covid Deaths in California", color = "Legend") +
+    labs(x="Date", y="New Deaths",title = "COVID Deaths Over Time in California", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -89,9 +89,9 @@ spain_density$avg_new_deaths=stats::filter(spain_density$New_deaths, filter = re
 
 Iraq_Cases <- iraq_area %>%
   ggplot( aes(x=Date_reported, y=New_cases)) +
-    geom_area(fill="lightgreen", alpha=0.5) +
-    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average'), color='Green') +
-    labs(x="Date", y="New Cases",title = "Covid Cases in Iraq", color = "Legend") +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average')) +
+    labs(x="Date", y="Cases per 10k People",title = "COVID Cases Over Time in Iraq", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -100,9 +100,9 @@ Iraq_Cases <- ggplotly(Iraq_Cases)
 
 Iraq_Deaths <- iraq_area %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
-    geom_area(fill="lightgreen", alpha=0.5) +
-    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average'), color='Green') +
-    labs(x="Date", y="New Deaths",title = "Covid Deaths in Iraq", color = "Legend") +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average')) +
+    labs(x="Date", y="Deaths per 10k People",title = "COVID Deaths Over Time in Iraq", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -113,9 +113,9 @@ Iraq_Deaths
 
 Spain_Cases <- spain_density %>%
   ggplot( aes(x=Date_reported, y=New_cases)) +
-    geom_area(fill="blue", alpha=0.5) +
-    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average'), color='blue') +
-    labs(x="Date", y="New Cases",title = "Covid Cases in Spain", color = "Legend") +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_cases,color='7-Day Running Average')) +
+    labs(x="Date", y="Cases per 10k People",title = "COVID Cases Over Time in Spain", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -124,9 +124,9 @@ Spain_Cases <- ggplotly(Spain_Cases)
 
 Spain_Deaths <- spain_density %>%
   ggplot( aes(x=Date_reported, y=New_deaths)) +
-    geom_area(fill="blue", alpha=0.5) +
-    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average'), color='blue') +
-    labs(x="Date", y="New Deaths",title = "Covid Deaths in Spain", color = "Legend") +
+    geom_area(fill="lightpink", alpha=0.5) +
+    geom_line(aes(x=Date_reported, y=avg_new_deaths,color='7-Day Running Average')) +
+    labs(x="Date", y="Deaths per 10k People",title = "COVID Deaths Over Time in Spain", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -134,4 +134,28 @@ Spain_Deaths <- ggplotly(Spain_Deaths)
 
 Spain_Cases
 Spain_Deaths
+```
+
+```{r Metcode differences}
+ca_counties <- merged
+ca_counties$date <- as.Date(ca_counties$date)
+keeps <- c("new_casesrate", "date", "Urban_Influence_Code_2013", "MetCode")
+ca_counties <- ca_counties[keeps]
+```
+
+```{r Metcode differences}
+ca_county_codes <- aggregate(ca_counties$new_casesrate, by=list(ca_counties$date, ca_counties$MetCode), FUN=mean)
+
+names(ca_county_codes) <- c("date", "MetCode", "mean_new_caserate")
+ca_county_codes$mean_new_caserate=stats::filter(ca_county_codes$mean_new_caserate, filter = rep(1/7, 7), sides = 1)
+
+levels(ca_county_codes$MetCode) <- c("Non-Metropolitan", "Metropolitan")
+
+county_code_cases <- ggplot(data=ca_county_codes, aes(x=date, y=mean_new_caserate, group=MetCode, color=MetCode)) +
+  geom_line() +
+  labs(x = "Date", y = "Cases per 10k People", title = "COVID Cases Over Time in California", color = "County Type") +
+    theme_ipsum()
+
+county_code_cases <- ggplotly(county_code_cases)
+county_code_cases
 ```
