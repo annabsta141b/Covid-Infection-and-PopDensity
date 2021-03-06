@@ -241,7 +241,7 @@ Iraq_Cases
 Iraq_Deaths
 ```
 
-We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
+We looked to compare the 7 day running average for Spain and Iraq. 
 
 ## California
 
@@ -287,7 +287,6 @@ plot_by_calif_county = function(place){
     #scale_x_date(date_breaks  ="1 month")+
     scale_x_date(date_labels = "%Y %b",date_breaks = "1 month")+
     theme(axis.text.x = element_text(angle = 90))
-  
 }
 
 g1 = plot_by_calif_county("San Francisco")
@@ -500,7 +499,14 @@ qqline(resid(model_new7))
 anova(model_new7)
 ```
 
-The final Linear Mixed-Effects model indicates an increase in
+
+
+
+
+# Causal Inference 
+
+After the addition of propensity scores in our Linear Mixed Model, we observed very little change in the treatment effect. The biases introduced by poverty and elder ratios are not significantly reduced after weighting. It is therefore highly possible that there still exists selection bias which invalidates our ability to conduct proper causal inference.
+
 
 # References
 
