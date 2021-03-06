@@ -1,12 +1,13 @@
 ---
 title: "The Effect of Population Density on COVID-19 Case Rates"
+author: "Team 3; Group 1; Ana Boeriu, Christina De Cesaris, Mary-Francis LaPorte, Cameron Shinn"
+date: "3/5/2021"
 output:
   html_document:
     df_print: paged
     graphics: yes
     number_sections: true
 ---
-Names: Ana, Mary, Cameron, Chritina
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -244,10 +245,20 @@ We looked to compare the frequency of new cases versus mortalities. Compared to 
 
 ## California
 
+### Overall
+
+Below are the plots for cases and deaths in California
+
 ```{r, echo=FALSE, results='show'}
 Cali_Cases
 Cali_Deaths
 ```
+
+We can see there are two waves of the pandemic, with the second being much worse than the first. The week to week fluctuations are suggest that people are catching the disease at certain times of the week (presumably the weekend) and these fluctuations are normalized by the 7-day running average.
+
+### Example Counties
+
+Looking at a few counties as an example, below we can see San Francisco and Inyo counties. The first is a metropolitan county and the second is not.
 
 ```{r, echo= FALSE}
 ourData = read.csv('Data/final.csv')
@@ -313,7 +324,7 @@ To simplify our model we will be condensing our response variable by labeling ea
 county_code_cases
 ```
 
-Looking at the case numbers between our two groups the first smaller wave had more cases per-capita in metropolitan areas, but in the second wave the non-metropolitan counties meet and exceed the cases per-capita of metropolitan counties.
+Looking at the case numbers between our two groups the first smaller wave had more cases per-capita in metropolitan areas, but in the second wave the non-metropolitan counties meet and exceed the cases per-capita of metropolitan counties. Interestingly, the dip around the peak of the second wave was almost entirely caused by metropolitan counties, perhaps suggesting people were leaving the city for the holidays.
 
 # Linear Mixed-Effects Model
 
