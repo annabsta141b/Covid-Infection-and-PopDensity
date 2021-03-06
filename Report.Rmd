@@ -490,6 +490,9 @@ anova(model_new7)
 
 The final Linear Mixed-Effects model indicates an increase in
 
+# Conclusion
+In this study we examined the relationship between Covid-19 infection rates per 10,000 people in California and population density. Other variab The data on infection rates was collected daily on the county level from March 2020 to February 2021. 
+
 # References
 
 1. Almagro, M. (2020, September 22). Racial Disparities in Frontline Workers and Housing Crowding During COVID-19: Evidence from Geolocation Data by Milena Almagro, Joshua Coven, Arpit Gupta, Angelo Orane-Hutchinson :: SSRN. SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3695249
