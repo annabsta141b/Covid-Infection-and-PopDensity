@@ -499,11 +499,7 @@ qqline(resid(model_new7))
 anova(model_new7)
 ```
 
-
-
-
-
-# Causal Inference 
+# Causal Interpretation
 
 After the addition of propensity scores in our Linear Mixed Model, we observed very little change in the treatment effect. The biases introduced by poverty and elder ratios are not significantly reduced after weighting. It is therefore highly possible that there still exists selection bias which invalidates our ability to conduct proper causal inference.
 
