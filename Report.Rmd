@@ -264,11 +264,13 @@ Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
+To simplify our model
+
 ```{r, echo=FALSE, results='show'}
 county_code_cases
 ```
 
-```{r include=FALSE}
+```{r, include=FALSE}
 final=read.csv("Data/final.csv")
 
 which(is.na(final))
@@ -281,7 +283,7 @@ final$county=as.factor(final$county)
 final$date=as.factor(final$date)
 ```
          
-```{r include=FALSE}
+```{r, include=FALSE}
 #grab our potential predictors and response, MetCode is our treatment group
 dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square.mile.of.land.area','date','Poverty_Estimate',"Poverty_Percent","Pop_Estimate","MetCode","totalcountconfirmed"),]
 #look for any particular parterns. The clearist is household income and povery rates--unsurpisingly
@@ -290,7 +292,7 @@ dat = final[,c("county"  ,'new_casesrate','elder_ratio','HouseDensity.per.square
 dat
 ```
 
-Our proposed model seeks to determine a casual relationship between an area's metropolitan status and Covid-19 infection rates. As previously stated, we assume the independent fixed effects of elder ratio and poverty percent contribute underlying effects in determining both whether a county is labeled as metropolitan and its associated infection rates.
+Our proposed model seeks to determine a casual relationship between an area's metropolitan status and COVID-19 infection rates. As previously stated, we assume the independent fixed effects of elder ratio and poverty percent contribute underlying effects in determining both whether a county is labeled as metropolitan and its associated infection rates.
 
 It is under our assumption that metropolitan locations tend to have lower numbers of elderly and higher levels of poverty compared to nonmetropolitan areas. 
 
@@ -314,9 +316,9 @@ Where
 (McCullagh, P, & Nelder, J. A. (1989). Generalized Linear Models, 2nd ed. Chapman & Hall/CRC Press.)
 
 
-The distribution of infection rates was highly right skewed, so a log(x+1) transformation was applied to the numeric variables in the data. 
+The distribution of infection rates was highly right skewed, so a $log(x+1)$ transformation was applied to the numeric variables in the data. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 par(mfrow=c(1,2))
 #Transformation
 #check the distribution of our response and predictors
@@ -337,27 +339,24 @@ transformed=(drop_na(transformed))
 
 A quick comparision of the average infection rates between our treatment and control indicates a higher average present in metropolitan coded counties.
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 boxplot(transformed$new_casesrate~transformed$MetCode,main='Comparision of Averages Between Groups',
 xlab='MetroCode',ylab='Infection Rate',col=rainbow(5))
 ```
 
-
-
-
 A Mixed Effects Linear model was fit without the use of propensity score weighting.
 
-In the case of this model, our treatment was MetroCode=1 (metropolitan county) and our control was MetroCode=0 (non-metropolitan county)
+In the case of this model, our treatment was `MetroCode=1` (metropolitan county) and our control was `MetroCode=0` (non-metropolitan county)
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 model1 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed)
 summary(model1)
 
 ```
 
-We found the treatment effect to be statistically significant at p=0.1. Poverty rates were not found to have a significant effect while elder ratios were statistically significant with p<0.001. 
+We found the treatment effect to be statistically significant at $p=0.1$. Poverty rates were not found to have a significant effect while elder ratios were statistically significant with $p<0.001$. 
 
 However, our previous analysis leads us to believe both poverty rates and elder ratios influence whether an area is determined as metropolitan or not. 
 
@@ -365,7 +364,7 @@ To assess the extend of this bias during assignment, we will compare the imbalan
 
 MetroCodes against Elder Ratio
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 transformed$MetCode=as.numeric(as.character(transformed$MetCode))
 
@@ -375,12 +374,9 @@ summary(model2)#clearly there is bias between
 
 ```
 
-
-
 MetroCodes against Poverty Ratio
 
-
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 
 ## Balance analysis
@@ -389,12 +385,12 @@ summary(model3)#clearly there is bias between
 
 ```
 
-In both cases there appears to be strong imbalance between MetroCode levels and our two covariates as p<0.01. This suggests there may be selection bias present. We aim to use propensity score to reduce these effects.
+In both cases there appears to be strong imbalance between MetroCode levels and our two covariates as $p<0.01$. This suggests there may be selection bias present. We aim to use propensity score to reduce these effects.
 
 Propensity scores were determined using logistic regression with our treatment as the response against our two covariates. The probabilities estimated by the logistic regression model were processed and inverted. The final scores were used as weights in the final Linear Mixed Model. 
 
 *Pscores*
-```{r echo=FALSE}
+```{r, echo=FALSE}
 #transformed$MetCode = #relevel(transformed$MetCode,ref='0')
 
 
@@ -426,27 +422,20 @@ legend(.4, 5, legend=c("Metro", "NonMetro"),
 
 The distribution of the propensity scores indicates there is not a significant difference in scoring between the treatment and control group despite the existence of confounding effects. The propensity scoring and matching method used may be improved upon with alternate methods.
 
-
-
-
 # Weighted Model
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 model_new7 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed,weights = weight)
 summary(model_new7) #1|pred -> predbecomes random effect here
 ```
 
-The final mixed effects model with propensity score weights is not significantly different than the model without. The difference in estimates is not marginally different from the unweighted model. Our treatment group has a positive relationship with the infection rate (p<0.01), indicating metropolitan counties may have high infection rates than nonmetropolitan counties. 
-
-
+The final mixed effects model with propensity score weights is not significantly different than the model without. The difference in estimates is not marginally different from the unweighted model. Our treatment group has a positive relationship with the infection rate ($p<0.01$), indicating metropolitan counties may have high infection rates than non-metropolitan counties. 
 
 # Sensitivity Analysis
 
-```{r echo=FALSE}
+```{r, echo=FALSE}
 
 plot(model_new7,type=c('p','smooth'))
-
-
 
 qqnorm(unique(resid(model_new7)))
 qqline(resid(model_new7))
@@ -455,6 +444,21 @@ anova(model_new7)
 ```
 
 The final Linear Mixed-Effects model indicates an increase in
+
+# References
+
+1. Almagro, M. (2020, September 22). Racial Disparities in Frontline Workers and Housing Crowding During COVID-19: Evidence from Geolocation Data by Milena Almagro, Joshua Coven, Arpit Gupta, Angelo Orane-Hutchinson :: SSRN. SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3695249
+
+2. Making maps with R. (n.d.). Retrieved March 05, 2021, from https://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
+
+3. Mortality Risk of COVID-19 - Statistics and Research. (2021). Our World in Data. https://ourworldindata.org/mortality-risk-covid
+
+4. Peters, D. J. (2020, June 1). Community Susceptibility and Resiliency to COVID-19 Across the RuralâUrban Continuum in the United States. Wiley Online Library. https://onlinelibrary.wiley.com/doi/full/10.1111/jrh.12477
+
+5. Tarwater, P. M. (2001, July 1). Effects of population density on the spread of disease. Wiley Online Library. https://onlinelibrary.wiley.com/doi/abs/10.1002/cplx.10003#:%7E:text=Although%20an%20epidemic%20is%20likely,to%2098%25%20of%20the%20time
+
+6. Wong, D. W. S. (2020, December 23). Spreading of COVID-19: Density matters. PLOS ONE. https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0242398
+
 
 # Session info {-}
 
