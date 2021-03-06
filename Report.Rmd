@@ -242,7 +242,7 @@ Cali_Cases
 Cali_Deaths
 ```
 
-We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
+We looked to compare the 7 day running average for Spain and Iraq. 
 
 ```{r, echo= FALSE}
 ourData = read.csv('Data/final.csv')
@@ -271,13 +271,11 @@ plot_by_calif_county = function(place){
     #scale_x_date(date_breaks  ="1 month")+
     scale_x_date(date_labels = "%Y %b",date_breaks = "1 month")+
     theme(axis.text.x = element_text(angle = 90))
-  
 }
 
 g1 = plot_by_calif_county("San Francisco")
 g2 = plot_by_calif_county("Inyo")
-plot_by_calif_county("Alpine")
-grid.arrange(g1,g2,nrow = 2, ncol = 2)
+grid.arrange(g1,g2,nrow = 2, ncol = 1)
 ```
 
 
