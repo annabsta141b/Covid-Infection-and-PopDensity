@@ -162,7 +162,6 @@ county_code_cases <- ggplotly(county_code_cases)
 
 The COVID-19 pandemic, while ubiquitous worldwide, has differentially affected different segments of the population. Regional demographic factors, such as population density, could have an impact on this respiratory, community transmitted disease. This study addresses the association and impact of demographic factors on COVID-19 rates, particularly in California Counties. California’s counties were selected due to their large range in population densities (1.6 to 17,179.2 people per square mile) and diversity across the rural-urban continuum. State model type. In particular, this study calculates a propensity score to explore if there is a causal relationship between the population density and COVID-19 case rates. The linear mixed model indicates a negative relationship between elder ratio and infection rate and a positive relationship between metropolitan counties and infection rates.Selection bias persisted after propensity scores were included in the model, invalidating our ability to infer a causal relationship between metropolitan locations and infection rates. These findings indicate which areas are at higher risk during pandemic outbreaks and could critically help policymakers allocate funding and healthcare to these regions.
 
-
 # Introduction
 
 The ongoing COVID-19 pandemic has impacted lives worldwide, but residents of different regions have been differentially impacted. Since COVID-19 regulations have often been handled at the national or state level, the impact of subregional influences on case counts needs to be addressed to allocate aid where it is needed most. Additional aid to vulnerable subregions could hinder the progress of the virus as it spreads throughout an entire country and keep more of the overall population healthy. One particular factor we are interested in is the population distribution over a country, and how differing population densities between subregions plays a role in transmission rates of the disease.
@@ -323,7 +322,7 @@ To simplify our model we will be condensing our response variable by labeling ea
 county_code_cases
 ```
 
-Looking at the case numbers between our two groups the first smaller wave had more cases per-capita in metropolitan areas, but in the second wave the non-metropolitan counties meet and exceed the cases per-capita of metropolitan counties. Interestingly, the dip around the peak of the second wave was almost entirely caused by metropolitan counties, perhaps suggesting people were leaving the city for the holidays.
+Looking at the case numbers between our two groups the first smaller wave had more cases per-capita in metropolitan areas, but in the rising of the second wave, the non-metropolitan counties meet and exceed the cases per-capita of metropolitan counties. Interestingly, the dip around the peak of the second wave was almost entirely caused by metropolitan counties, perhaps suggesting people were leaving the city for the holidays.
 
 # Linear Mixed-Effects Model
 
