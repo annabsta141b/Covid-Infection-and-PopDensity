@@ -51,7 +51,7 @@ Cali_Cases <- cases_sum %>%
   ggplot( aes(x=date, y=total_n_cases)) +
     geom_area(fill="lightpink", alpha=0.5) +
     geom_line(aes(x=date, y=avg_new_cases,color='7-Day Running Average')) +
-    labs(x="Date", y="New Cases",title = "COVID Cases Over Time in California", color = "Legend") +
+    labs(x="Date", y="Cases per 10k People",title = "COVID Cases Over Time in California", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -61,7 +61,7 @@ Cali_Deaths <- deaths_sum %>%
   ggplot( aes(x=date, y=total_n_deaths)) +
     geom_area(fill="lightpink", alpha=0.5) +
     geom_line(aes(x=date, y=avg_new_deaths,color='7-Day Running Average')) +
-    labs(x="Date", y="New Deaths",title = "COVID Deaths Over Time in California", color = "Legend") +
+    labs(x="Date", y="Deaths per 10k People",title = "COVID Deaths Over Time in California", color = "Legend") +
     theme_ipsum()
 
 # Turn it interactive with ggplotly
@@ -221,8 +221,6 @@ The second dataset is from the New York Times. This data contains county level i
 
 The third data source is the US census. This Organization is a part of the US government who counts the entire nation every decade. As a census, by definition the target population is every resident of the United States, and their sampling mechanism is to speak to every household in the entire country and count all residents. The main variable that we used from this dataset is the population density per county. This is calculated as the population per square mile. We used this dataset as it could give us the best idea of the true population density. 
 
-**The fourth and fifth dataset come from ____ ; target population, sampling mechanism; explain variables;** We used this data to
-
 ## Other work
 
 Similar studies have looked at the effects of population density on the COVID-19 pandemic (Peters, 2020; Wong, 2020; Almagro, 2020). Previous studies have shown that it is an important factor in community-spread diseases (Tarwater 2001). This report adds to the existing literature as it adds the analysis of causality in the discussion.
@@ -231,18 +229,25 @@ Similar studies have looked at the effects of population density on the COVID-19
 
 In this section, we will be giving a comparative international view of the COVID-19 pandemic, complimented by county-level data in California. We will be looking at trends in the data and discussing any abnormalities found. 
 
-First, we looked at the global pandemic rates in each country. As we are interested in the county-level data in California because of its range of rural and urban environments, we focused on two nations that have similar population densities to California as a whole. These nations are Spain and Iraq.
+## Iraq and Spain
+
+First, we looked at the global pandemic rates in each country. Since we are interested in applying the county-level data in California on a national scale, we focused on Spain and Iraq. These two countries which have similar characteristics to California (area and population density).
 
 ```{r, echo=FALSE, results='show'}
 Spain_Cases
 Spain_Deaths
 Iraq_Cases
 Iraq_Deaths
-Cali_Cases
-Cali_Deaths
 ```
 
 We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
+
+## California
+
+```{r, echo=FALSE, results='show'}
+Cali_Cases
+Cali_Deaths
+```
 
 ```{r, echo= FALSE}
 ourData = read.csv('Data/final.csv')
@@ -276,8 +281,7 @@ plot_by_calif_county = function(place){
 
 g1 = plot_by_calif_county("San Francisco")
 g2 = plot_by_calif_county("Inyo")
-plot_by_calif_county("Alpine")
-grid.arrange(g1,g2,nrow = 2, ncol = 2)
+grid.arrange(g1,g2,nrow = 2, ncol = 1)
 ```
 
 
@@ -301,11 +305,17 @@ Figure X. July 2020 case count. For mapping methods see: Making maps with R
 
 Figure X. January 2020 case count. For mapping methods see: Making maps with R
 
-To simplify our model
+## Grouping Response Variable
+
+To simplify our model we will be condensing our response variable by labeling each county as a metropolitan or non-metropolitan county. Codes corresponding to these categories were pulled from the California Demographic data. Having a binary response allows us to perform causal inference from the results of our model. This way we can use non-metropolitan counties as a control group and metropolitan counties as a treatment group.
 
 ```{r, echo=FALSE, results='show'}
 county_code_cases
 ```
+
+Looking at the case numbers between our two groups the first smaller wave had more cases per-capita in metropolitan areas, but in the second wave the non-metropolitan counties meet and exceed the cases per-capita of metropolitan counties.
+
+# Linear Mixed-Effects Model
 
 ```{r, include=FALSE}
 final=read.csv("Data/final.csv")
@@ -331,12 +341,11 @@ dat
 
 Our proposed model seeks to determine a casual relationship between an area's metropolitan status and COVID-19 infection rates. As previously stated, we assume the independent fixed effects of elder ratio and poverty percent contribute underlying effects in determining both whether a county is labeled as metropolitan and its associated infection rates.
 
-It is under our assumption that metropolitan locations tend to have lower numbers of elderly and higher levels of poverty compared to nonmetropolitan areas. 
+It is under our assumption that metropolitan locations tend to have lower numbers of elderly and higher levels of poverty compared to non-metropolitan areas. 
 
 The lme4 package was used to fit our Linear Mixed-Effects Models. Since the data contained a multitude of observations for different counties over the course of several days, we assumed existing random, unmeasurable effects were present in our data. In this model, we define county and date effects as random effects we cannot control.
 
 Our Linear Mixed-Effects Model takes the following form:
-
 
 $$y = {X\beta} + {Zu} + {\varepsilon}$$
 Where
@@ -459,7 +468,7 @@ legend(.4, 5, legend=c("Metro", "NonMetro"),
 
 The distribution of the propensity scores indicates there is not a significant difference in scoring between the treatment and control group despite the existence of confounding effects. The propensity scoring and matching method used may be improved upon with alternate methods.
 
-# Weighted Model
+## Final Weighted Model
 ```{r, echo=FALSE}
 
 model_new7 = lmer(new_casesrate~(elder_ratio)+factor(MetCode)+I(Poverty_Percent/100)+(1|county)+(1|date),data = transformed,weights = weight)
