@@ -241,8 +241,71 @@ Cali_Cases
 Cali_Deaths
 ```
 
-**lines 37 - 90 monthly new cases function eda who file**
 We looked to compare the frequency of new cases versus mortalities. Compared to Spain, Iraq had consistently more cases of COVID in the months from June until December with its peak in September. Spain on the other hand, has lower mortalities in the entire time period except February to May 2020. 
+
+```{r, echo= FALSE}
+ourData = read.csv('Data/final.csv')
+View(ourData)
+
+ourData$caseFatality = ourData$totalcountdeaths/ourData$totalcountconfirmed *10000
+#move case column 
+ourData = ourData[,c(1:4,12,5:11)]
+
+overall.cf = sum(ourData$totalcountdeaths, na.rm= TRUE) / sum(ourData$totalcountconfirmed,na.rm= TRUE) *10000
+overall.cf
+
+data = subset(ourData, county == "Alameda")
+c = sum(data$totalcountdeaths, na.rm= TRUE) 
+
+get.percent.dead = function(location, dataset){
+  specific.data = subset(dataset, county == location)
+  num_dead = sum(specific.data$totalcountdeaths, na.rm= TRUE)
+  overall_dead = sum(dataset$totalcountdeaths, na.rm = TRUE)
+  percent = (num_dead/overall_dead) * 100
+  return(percent)
+}
+get.percent.dead("Alameda", ourData)
+
+a = aggregate(totalcountdeaths~county, ourData, sum)
+head(a)
+
+ggplot(a)+
+  geom_bar(aes(x=county,y= totalcountdeaths ))
+
+plot_by_calif_county = function(place){
+
+  county.specific.data = subset(ourData, county == place)
+  #split into month and year
+  county.specific.data$mo = strftime(county.specific.data$date, "%m")
+  county.specific.data$yr <- strftime(county.specific.data$date, "%Y")
+  #aggregate by month
+  cases  = aggregate(totalcountconfirmed~mo +yr, county.specific.data, sum)
+  dead = aggregate(totalcountdeaths~mo +yr, county.specific.data, sum)
+  newd = cbind(cases, dead[,3])
+  names(newd) = c("month", "yr", "cases", "dead")
+  
+  newd$date = as.yearmon(paste(newd$yr, newd$mo), "%Y %m")
+  newd$date = as.Date(newd$date)
+  newd$case_fatality_per_tenk = (newd$dead/newd$cases) *10000
+  
+  
+  ggplot(newd)+
+    geom_bar(aes(x=date, y = case_fatality_per_tenk), stat = "identity")+xlab("Date") +
+    ylab("Case Fatality Rate per 10k")+ggtitle(paste0("Monthly Case Fatality Rate for ", county.specific.data$county))+
+    theme(plot.title = element_text(hjust = 0.5))+theme_bw()+
+    #scale_x_date(date_labels = "%y %b",date_breaks = "1 month")+
+    #scale_x_date(date_breaks  ="1 month")+
+    scale_x_date(date_labels = "%Y %b",date_breaks = "1 month")+
+    theme(axis.text.x = element_text(angle = 90))
+  
+}
+
+g1 = plot_by_calif_county("San Francisco")
+g2 = plot_by_calif_county("Inyo")
+plot_by_calif_county("Alpine")
+grid.arrange(g1,g2,nrow = 2, ncol = 2)
+```
+
 
 San Francisco has fewer case fatalities compared to Inyo during the entire time period. 
 
