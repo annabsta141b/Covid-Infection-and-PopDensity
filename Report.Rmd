@@ -504,6 +504,9 @@ anova(model_new7)
 After the addition of propensity scores in our Linear Mixed Model, we observed very little change in the treatment effect. The biases introduced by poverty and elder ratios are not significantly reduced after weighting. It is therefore highly possible that there still exists selection bias which invalidates our ability to conduct proper causal inference.
 
 
+# Conclusion
+In this study we examined the relationship between Covid-19 infection rates per 10,000 people in California and population density. Other variab The data on infection rates was collected daily on the county level from March 2020 to February 2021. 
+
 # References
 
 1. Almagro, M. (2020, September 22). Racial Disparities in Frontline Workers and Housing Crowding During COVID-19: Evidence from Geolocation Data by Milena Almagro, Joshua Coven, Arpit Gupta, Angelo Orane-Hutchinson :: SSRN. SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3695249
